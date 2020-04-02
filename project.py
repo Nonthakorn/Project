@@ -8,16 +8,16 @@ RED = (255, 0, 0)
 
 pygame.init()
 
-size = (509, 509)
+size = (509, 600)
 screen = pygame.display.set_mode(size)
 
-pygame.display.set_caption("My Game")
+pygame.display.set_caption("Test")
 
-
+walkRight = [pygame.image.load('Game\R1.png')]
+walkLeft = [pygame.image.load('Game\L1.png')]
+char = pygame.image.load('Game\standing.png')
 #done = False
-
 #clock = pygame.time.Clock()
-
 width=50
 height=50
 margin=1
@@ -26,6 +26,29 @@ heightk =50
 x = 0
 y = 0
 vel = 50
+isJump = False
+jumpCount = 10
+
+left = False
+right = False
+walkCount = 0
+
+def redrawGameWindow():
+    global walkCount
+        
+    if left:  
+        screen.blit(walkLeft[walkCount], (x-10,y-10))
+        #walkCount += 1                          
+    elif right:
+        screen.blit(walkRight[walkCount], (x-10,y-10))
+        #walkCount += 1
+    else:
+        screen.blit(walkRight[walkCount], (x-10, y-10))
+        #walkCount = 0
+    #pygame.display.flip()
+    #screen.fill(255,255,255)
+    #pygame.draw.rect(screen, (0, 0, 0), (x, y, width+1, height+1))
+    pygame.display.update()
 
 run = True
 while run:
@@ -42,22 +65,32 @@ while run:
 
     if key[pygame.K_LEFT] and x >= vel:
         x -= vel+margin
-
+        left = True
+        right = False
     if key[pygame.K_RIGHT] and x <= 509 - width - vel:
         x += vel+margin
+        left = False
+        right = True
+    if left == True:
+        if key[pygame.K_UP] and y >= vel:
+            y -= vel+margin
+            left = True
+            right = False
+        if key[pygame.K_DOWN] and y <= 509 - height - vel:
+            y += vel+margin
+            left = True
+            right = False
+    else:
+        if key[pygame.K_UP] and y >= vel:
+            y -= vel+margin
+            left = False
+            right = True
+        if key[pygame.K_DOWN] and y <= 509 - height - vel:
+            y += vel+margin
+            left = False
+            right = True
 
-    if key[pygame.K_UP] and y >= vel:
-        y -= vel+margin
-
-    if key[pygame.K_DOWN] and y <= 509 - height - vel:
-        y += vel+margin
-
-    pygame.display.flip()
-    #screen.fill(255,255,255)
-    pygame.draw.rect(screen, (0, 0, 0), (x, y, width, height))
-    pygame.display.update()
-    
-    # --- Limit to 60 frames per second
+    redrawGameWindow()
     #clock.tick(60)
     
     #screen.fill(0,0,0)
