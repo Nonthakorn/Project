@@ -9,64 +9,23 @@ WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
-pygame.init()
-sizewidth = 909
-sizehight = 509
-size = (909, 515) # 900 คือความกว้าง 515 ความยาว
-screen = pygame.display.set_mode(size)
+def building(num_of_building):
+    cbuilding = pygame.image.load('char/building.png')
+    cbuilding = pygame.transform.scale(cbuilding,(40,40))
 
-pygame.display.set_caption("Test")
-
-walkRight = [pygame.image.load('char/right.png')]
-walkLeft = [pygame.image.load('char/left.png')]
-char = [pygame.image.load('char/front.png')]
-stback = [pygame.image.load('char/back.png')]
-building = pygame.image.load('char/building.png')
-building = pygame.transform.scale(building,(45,45))
-brain = pygame.image.load('char/brain.png')
-brain = pygame.transform.scale(brain,(45,45))
-#done = False
-#clock = pygame.time.Clock()
-width=50
-height=50
-margin=1
-widthk = 50
-heightk =50
-x = 0
-y = 0
-vel = 50
-isJump = False
-jumpCount = 10
-
-left = False
-right = False
-back = False
-front = True
-walkCount = 0
-boundary = 509
-key = pygame.key.get_pressed()
-font = pygame.font.Font('freesansbold.ttf', 32)  #กำหนดฟอนต์
-  
-# create a text suface object, 
-# on which text is drawn on it. 
-text = font.render('INPUT', True, GREEN,RED)  #render text
-  
-# create a rectangular object for the 
-# text surface object 
-textRect = text.get_rect()   # นำ tect ไปใส่บน screen
-  
-# set the center of the rectangular object. 
-textRect.center = (700, 35)  # จัดตำแหน่งของ Text
+    building = []
+    for _ in range(num_of_building):
+        getxy = []
+        getxy.append(cbuilding)
+        for j in range(2):
+            getxy.append(random.randrange(51,458,51))
+        building.append(getxy)
+    return building
 
 
-text2 = font.render('Crash', True, GREEN,RED)  #render text
-  
-# create a rectangular object for the 
-# text surface object 
-textRect2 = text2.get_rect()   # นำ tect ไปใส่บน screen
-  
-# set the center of the rectangular object. 
-textRect2.center = (700, 70)  # จัดตำแหน่งของ Text
+
+buildings = building(5)
+    
 
 def redrawGameWindow():
     global walkCount
@@ -87,17 +46,15 @@ def redrawGameWindow():
     #pygame.draw.rect(screen, (0, 0, 0), (x, y, width+1, height+1))
     pygame.display.update()
 #building
-buildingX = random.randrange(51,458,51)
-buildingY = random.randrange(51,458,51)
-def random_building():
-    screen.blit(building, (buildingX+3, buildingY+5))
-    pygame.display.update()
+
 
 #brain 
 brainX = random.randrange(51,458,51)
 brainY = random.randrange(51,458,51)
-def random_brain():
-    screen.blit(brain, (brainX+3, brainY+5))
+def random_brain(brainX,brainY):
+    brain = pygame.image.load('char/brain.png')
+    brain = pygame.transform.scale(brain,(53,52))
+    screen.blit(brain, (brainX-0.5, brainY))
     pygame.display.update()
 
  # เมื่อเจอสิ่งกีดขวาง
@@ -108,10 +65,54 @@ def iscollision(x,y,buildingX,buildingY):
     else:
         return False
 
-GameStage = 0
-# for column in range(0+margin,boundary, width+margin):
-#     for row in range(0+margin, boundary, height+margin):
-#         pygame.draw.rect(screen, WHITE, [column,row,width,height])z
+pygame.init()
+sizewidth = 909
+sizehight = 509
+size = (909, 515) # 900 คือความกว้าง 515 ความยาว
+screen = pygame.display.set_mode(size)
+
+pygame.display.set_caption("Test")
+
+walkRight = [pygame.image.load('char/right.png')]
+walkLeft = [pygame.image.load('char/left.png')]
+char = [pygame.image.load('char/front.png')]
+stback = [pygame.image.load('char/back.png')]
+
+
+width=50
+height=50
+margin=1
+widthk = 50
+heightk =50
+x = 0
+y = 0
+vel = 50
+isJump = False
+jumpCount = 10
+
+left = False
+right = False
+back = False
+front = True
+walkCount = 0
+boundary = 509
+key = pygame.key.get_pressed()
+font = pygame.font.Font('freesansbold.ttf', 32)  #กำหนดฟอนต์
+  
+text = font.render('INPUT', True, GREEN,RED)  #render text  
+textRect = text.get_rect()   # นำ tect ไปใส่บน screen  
+textRect.center = (700, 35)  # จัดตำแหน่งของ Text
+
+textCrash = font.render('Crash', True, RED,WHITE)  #render text
+textCrash_ = textCrash.get_rect()   # นำ tect ไปใส่บน screen
+textCrash_.center = (700, 70)  # จัดตำแหน่งของ 
+
+textPass = font.render('Pass', True, GREEN,WHITE)  #render text
+textPass_ = textPass.get_rect()   # นำ tect ไปใส่บน screen
+textPass_.center = (700, 70)  # จัดตำแหน่งของ Text
+
+
+building_break = True
 run = True
 while run:
     pygame.time.delay(100)
@@ -123,26 +124,18 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-        # for column in range(0+margin,boundary, width+margin):
-        #     for row in range(0+margin, boundary, height+margin):
-        #         pygame.draw.rect(screen, WHITE, [column,row,width,height])
-        # pygame.draw.rect(screen, BLACK, [509,0,515,515]) #set เส้นแบ่ง 2 หน้า
+
+
         pygame.draw.rect(screen, WHITE, [514,1,900,515]) # สร้างหน้าฝั่งขวา
     screen.blit(text, textRect)
-    for i in (f.read()):
-        text1 = font.render(str(i), True, RED,GREEN) 
-        textRect1 = text1.get_rect() 
-        textRect1.center = (630, count)
-        screen.blit(text1, textRect1)
-        count+=45
-        pygame.display.flip()
-        pygame.display.update()
+
+
+#################### MOVE LOGIC############################
     key = pygame.key.get_pressed()
     
     # if key[pygame.K_LEFT] and x >= vel:
     if key[pygame.K_LEFT]:
         # x -= vel+margin
-        GameStage += 1
         left = True
         right = False
         back = False
@@ -179,32 +172,36 @@ while run:
 
         elif front == True and y <= 509 - height - vel:
             y += vel+margin
-    collision = iscollision(x,y,buildingX,buildingY)
-    if collision:
-        screen.blit(text2, textRect2)
 
-    # if left == True:
-    #     if key[pygame.K_UP] and y >= vel:
-    #         y -= vel+margin
-    #         left = False
-    #         right = False
-    #     if key[pygame.K_DOWN] and y <= 509 - height - vel:
-    #         y += vel+margin
-    #         left = False
-    #         right = False
-    # else:
-    #     if key[pygame.K_UP] and y >= vel:
-    #         y -= vel+margin
-    #         left = False
-    #         right = False
-    #     if key[pygame.K_DOWN] and y <= 509 - height - vel:
-    #         y += vel+margin
-    #         left = False
-    #         right = False
-    random_brain()
-    random_building()
+
+#############################################################
+
+################Brain and Building Block######################          
+    if x == brainX and y == brainY:
+             screen.blit(textPass, textPass_)
+             x= 0
+             y=0
+             brainX = random.randrange(51,458,51)
+             brainY = random.randrange(51,458,51)
+             random_brain(brainX,brainY)
+             building_break = True
+    if building_break == True:
+        # pass
+        building1 = building(15)
+        
+    building_break = False
+    
+    for i in building1:
+        screen.blit(i[0], (i[1]+5, i[2]+5.5))
+        if x == i[1] and y == i[2]:
+             screen.blit(textCrash, textCrash_)
+             x = 0
+             y = 0
+
+    random_brain(brainX,brainY)
+##################################################################
     redrawGameWindow()
- 
+    pygame.display.update()
     #clock.tick(60)
     
 
@@ -212,3 +209,7 @@ while run:
     #pygame.display.update()
 # Close the window and quit.
 pygame.quit()
+
+
+
+
