@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 #get input
 f = open("input.txt", "r") # ใช้อ่านไฟล์ 
 count = 45
@@ -57,6 +58,16 @@ textRect = text.get_rect()   # นำ tect ไปใส่บน screen
 # set the center of the rectangular object. 
 textRect.center = (700, 35)  # จัดตำแหน่งของ Text
 
+
+text2 = font.render('Crash', True, GREEN,RED)  #render text
+  
+# create a rectangular object for the 
+# text surface object 
+textRect2 = text2.get_rect()   # นำ tect ไปใส่บน screen
+  
+# set the center of the rectangular object. 
+textRect2.center = (700, 70)  # จัดตำแหน่งของ Text
+
 def redrawGameWindow():
     global walkCount
         
@@ -89,10 +100,18 @@ def random_brain():
     screen.blit(brain, (brainX+3, brainY+5))
     pygame.display.update()
 
+ # เมื่อเจอสิ่งกีดขวาง
+def iscollision(x,y,buildingX,buildingY):
+    distance =  math.sqrt(math.pow(x-buildingX,2) + math.pow(y-buildingY,2))
+    if distance < 50 :
+        return True
+    else:
+        return False
+
 GameStage = 0
 # for column in range(0+margin,boundary, width+margin):
 #     for row in range(0+margin, boundary, height+margin):
-#         pygame.draw.rect(screen, WHITE, [column,row,width,height])
+#         pygame.draw.rect(screen, WHITE, [column,row,width,height])z
 run = True
 while run:
     pygame.time.delay(100)
@@ -151,18 +170,18 @@ while run:
     if key[pygame.K_g]:
         if left == True and x >= vel:
             x -= vel+margin
-            print("left")
+
         elif right == True and x <= 509 - width - vel:
             x += vel+margin
-            print("right")
+
         elif back == True and y >= vel:
             y -= vel+margin
-            print("back")
+
         elif front == True and y <= 509 - height - vel:
             y += vel+margin
-            print("front")
-            print(right)
-        
+    collision = iscollision(x,y,buildingX,buildingY)
+    if collision:
+        screen.blit(text2, textRect2)
 
     # if left == True:
     #     if key[pygame.K_UP] and y >= vel:
@@ -183,8 +202,8 @@ while run:
     #         left = False
     #         right = False
     random_brain()
-    redrawGameWindow()
     random_building()
+    redrawGameWindow()
  
     #clock.tick(60)
     
