@@ -136,10 +136,6 @@ bottonstart_.center = (700, 450)  # จัดตำแหน่งของ Text
 
 
 
-
-
-
-
 text_file = lstf
 num_of_order = len(text_file)
 num_text = 0
@@ -215,6 +211,7 @@ while run:
             back = False
             front = True
             move = False
+    redrawGameWindow()
     random_brain(brainX,brainY)
 ##################################################################
 #################### MOVE LOGIC############################
@@ -264,6 +261,7 @@ while run:
         redrawGameWindow()
         num_text+=1
             # pygame.time.delay(1000)
+################## Move with key########################
     if key[pygame.K_LEFT]:
     # if text_file[num_text] == 'l':
         print('l')
@@ -305,7 +303,6 @@ while run:
             y += vel+margin
         table()
         redrawGameWindow()
-
 
 #############################################################
 
