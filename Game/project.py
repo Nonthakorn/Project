@@ -120,11 +120,11 @@ textRect.center = (700, 35)  # จัดตำแหน่งของ Text
 
 textCrash = font.render('Crash', True, RED,WHITE)  #render text
 textCrash_ = textCrash.get_rect()   # นำ tect ไปใส่บน screen
-textCrash_.center = (700, 70)  # จัดตำแหน่งของ 
+textCrash_.center = (700, 300)  # จัดตำแหน่งของ 
 
 textPass = font.render('Pass', True, GREEN,WHITE)  #render text
 textPass_ = textPass.get_rect()
-textPass_.center = (700, 70)   # นำ tect ไปใส่บน screen
+textPass_.center = (700, 300)   # นำ tect ไปใส่บน screen
 
 bottonleft = font.render('Start', True, GREEN,WHITE)  #render text
 bottonleft_ = bottonleft.get_rect()   # นำ tect ไปใส่บน screen
@@ -134,6 +134,17 @@ bottonstart = font.render('Start', True, WHITE,GREEN)  #render text
 bottonstart_ = bottonstart.get_rect()   # นำ tect ไปใส่บน screen
 bottonstart_.center = (700, 450)  # จัดตำแหน่งของ Text
 
+textmove = font.render('Move', True, BLACK,WHITE)  #render text
+textmove_ = textmove.get_rect()
+textmove_.center = (700, 70)   # นำ tect ไปใส่บน screen
+
+textturnleft = font.render('Turnleft', True, BLACK,WHITE)  #render text
+textturnleft_ = textturnleft.get_rect()
+textturnleft_.center = (700, 70)   # นำ tect ไปใส่บน screen
+
+textturnleft = font.render('Turnleft', True, BLACK,WHITE)  #render text
+textturnleft_ = textturnleft.get_rect()
+textturnleft_.center = (700, 70)   # นำ tect ไปใส่บน screen
 
 
 text_file = lstf
@@ -144,6 +155,13 @@ def table():
     for column in range(0+margin,boundary, width+margin):
         for row in range(0+margin, boundary, height+margin):
             pygame.draw.rect(screen, WHITE, [column,row,width,height])
+
+
+def showcommand(forward,turntoleft):
+    if forward == True:
+        screen.blit(textmove, textmove_)
+    if turntoleft == True:
+        screen.blit(textturnleft, textturnleft_)
 
 building_break = True
 move = False
@@ -172,7 +190,7 @@ while run:
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
     # print(mouse)
-    if 727 > mouse[0] > 667 and 456 > mouse[1] > 439 :
+    if 727 > mouse[0] > 667 and 460 > mouse[1] > 439 :
         screen.blit(bottonstart, bottonstart_)
         if pygame.mouse.get_pressed() == (1, 0, 0):
             move = True
@@ -218,7 +236,13 @@ while run:
     key = pygame.key.get_pressed()
     # if key[pygame.K_LEFT] and x >= vel:
     if move == True:
+        pygame.draw.rect(screen, WHITE, [650,60,100,50])
         if text_file[num_text] == 'l':
+            forward = False
+            turntoleft =True
+            showcommand(forward,turntoleft)
+            pygame.time.wait(500)
+            
             print('l')
             facedirection +=1 
             if facedirection >3:
@@ -246,6 +270,10 @@ while run:
             table()
             redrawGameWindow()
         if text_file[num_text] == 'm':
+            forward = True
+            turntoleft = False
+            showcommand(forward,turntoleft)
+            pygame.time.wait(500)
             print('m')
             if left == True and x >= vel:
                 x -= vel+margin
@@ -257,6 +285,8 @@ while run:
                 y += vel+margin
             table()
             redrawGameWindow()
+            screen.blit(textmove, textmove_)
+        
         pygame.time.wait(700)
         redrawGameWindow()
         num_text+=1
