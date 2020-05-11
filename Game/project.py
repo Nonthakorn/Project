@@ -185,10 +185,9 @@ move = False
 run = True
 facedirection = 0
 stage = 1
-brainX, brainY = 142,142
+brainX, brainY = 142,213
 stageclear =0
 while run:
-    print("2")
     if stage == 2:
         screen.fill((255,255,255))
         pygame.draw.rect(screen, WHITE, [0,0,825,425])
@@ -294,7 +293,7 @@ while run:
     # if key[pygame.K_LEFT] and x >= vel:
     if move == True:
         pygame.draw.rect(screen, WHITE, [650,60,100,50])
-        if text_file[num_text] == 'l':
+        if text_file[num_text] == 'L':
             forward = False
             turntoleft =True
             # showcommand(forward,turntoleft)
@@ -326,7 +325,7 @@ while run:
                 front = False
             table()
             redrawGameWindow()
-        if text_file[num_text] == 'm':
+        if text_file[num_text] == 'M':
             forward = True
             pygame.time.wait(500)
             # print('m')
