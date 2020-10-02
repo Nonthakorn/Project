@@ -10,6 +10,8 @@ import sys
 import os
 import py_compile
 default = 1
+
+##add comment check git
 def main(num_stage):
     root = Tk()
 
