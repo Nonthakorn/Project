@@ -24,6 +24,7 @@ def main(num_stage):
     sizehight = 425
     size = (900, 500) # 900 คือความกว้าง
     screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
     bigfont = pygame.font.Font('freesansbold.ttf', 50)
     text_stage = bigfont.render('Stage', True, WHITE,GREEN)  #render text  
