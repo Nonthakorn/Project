@@ -1,0 +1,17 @@
+
+font = cv2.FONT_HERSHEY_PLAIN
+for i in range(len(boxes)):
+    if i in indexes:
+        x,y,w,h = boxes[i]
+        yolo = x,y,w,h
+        #yolo1 = sorted(yolo, key=lambda student: student[2])
+        #yolo2 = sorted
+        label = str(classes[class_ids[i]])
+        #color = colors[i]
+        cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
+        cv2.putText(img,label,(x,y+30),font,1,(255,255,255),2)
+        #print(label)
+        print(yolo)
+#cv2.imshow("prediction",img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
