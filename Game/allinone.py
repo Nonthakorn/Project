@@ -10,6 +10,8 @@ import runpy
 import sys
 import os
 import py_compile
+import ctypes
+ctypes.windll.user32.SetProcessDPIAware()
 
 def Start_stage(num_stage):
         
@@ -20,7 +22,7 @@ def Start_stage(num_stage):
     window_width,window_height = screen_width-150,screen_height
     # # screen = pygame.display.mode_ok((window_width,window_height))
     # screen = pygame.display.set_mode((window_width,window_height), pygame.VIDEORESIZE )
-    screen = pygame.display.set_mode((window_width,window_height), pygame.NOFRAME )
+    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN )
     # size = pygame.display.list_modes()[1]
     # screen = pygame.display.set_mode(size,pygame.RESIZABLE)
     ### config from json file ###
@@ -164,8 +166,9 @@ def Start_stage(num_stage):
         pygame.draw.rect(screen, WHITE, [25,window_height-25,window_width-50,5]) #bottom border
         pygame.draw.rect(screen, WHITE, [25,25,5,window_height-50]) #left border
         pygame.draw.rect(screen, WHITE, [window_width-30,25,5,window_height-50])  #right border
-        pygame.draw.rect(screen, WHITE, [((MARGIN + WIDTH) * 14)+25,25,5,window_height-50])  #right border
-    
+        pygame.draw.rect(screen, WHITE, [((MARGIN + WIDTH) * 14)+25,25,5,window_height-50])  #game border
+        pygame.draw.rect(screen, WHITE, [25,((MARGIN + WIDTH) * 14)+25,(MARGIN + WIDTH) * 14,5])
+
         # Draw the grid
         for row in range(13):
             for column in range(13):
