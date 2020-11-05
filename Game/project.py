@@ -9,6 +9,9 @@ import runpy
 import sys
 import os
 import py_compile
+import numpy as np
+import cv2
+from test import yolo
 default = 1
 
 ##add comment check git
@@ -127,7 +130,8 @@ def Select_stage():
     bigfont = pygame.font.Font('freesansbold.ttf', 50)
     text_stage = bigfont.render('Choose Stage', True, WHITE,GREEN)  #render text  
     text_stageRect = text_stage.get_rect().center = (260, 115)  # นำ tect ไปใส่บน screen 
-
+    screen = pygame.display.set_mode(size)
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 
     ####
     font = pygame.font.Font('freesansbold.ttf', 22) 
@@ -162,6 +166,7 @@ def Select_stage():
 
 
 
+
     def stage_one():
         screen.blit(stage_one_0, stage_one_Rect0)
         mouse = pygame.mouse.get_pos()
@@ -169,6 +174,7 @@ def Select_stage():
             screen.blit(stage_one_1, stage_one_Rect1)
             if pygame.mouse.get_pressed() == (1, 0, 0):
                 main(1)
+
     
     def stage_two():
         screen.blit(stage_two_0, stage_two_Rect0)
@@ -193,7 +199,7 @@ def Select_stage():
         if 295 > mouse[0] > 255 and 355  > mouse[1] > 335 :
             screen.blit(back1, backRect1)
             if pygame.mouse.get_pressed() == (1, 0, 0):
-                main()
+                main(1)
     pygame.init()
     run = True
     while run:
@@ -237,6 +243,7 @@ def Start_stage(num_stage):
                 y = i['char_y']
                 brainX = i['brain_x']
                 brainY = i['brain_y']
+
             
 
     ###input from text file ###
@@ -322,18 +329,22 @@ def Start_stage(num_stage):
         # print('x,y = ', create_grid(brainX,brainY))
         pygame.display.update()
 
-    bigfont = pygame.font.Font('freesansbold.ttf', 35)
-    text_stage = bigfont.render('Stage', True, WHITE,GREEN)  #render text  
-    text_stageRect = text_stage.get_rect().center = ((lenght-97), 25)  # นำ tect ไปใส่บน screen 
-    text_stagenumber = bigfont.render(str(num_stage), True, WHITE,GREEN)  #render text  
+    bigfont = pygame.font.Font('freesansbold.ttf', 30)
+    text_stage = bigfont.render('Stage', True, WHITE,BLACK)  #render text
+    text_stageRect = text_stage.get_rect().center = ((lenght-90), 25)  # นำ tect ไปใส่บน screen
+    text_stagenumber = bigfont.render(str(num_stage), True, WHITE,BLACK)  #render text
     text_stagenumberRect = text_stagenumber.get_rect().center = ((lenght-57), 75)  # นำ tect ไปใส่บน screen 
     text_stageClear = bigfont.render('Clear', True, BLACK)  #render text  
     text_stageClearRect = text_stageClear.get_rect().center = (((lenght-100)/2.5), hight/2.3)
     ### Start bottom
     startbott1 = bigfont.render('Start', True, WHITE,BLACK)  #render text  
-    startbott1Rect = startbott1.get_rect().center = ((lenght-97), hight -50)  # นำ tect ไปใส่บน screen 
-    startbott2 = bigfont.render('Start', True, GREEN,BLACK)  #render text  
-    startbott2Rect = startbott2.get_rect().center = ((lenght-97), hight -50)
+    startbott1Rect = startbott1.get_rect().center = ((lenght-90), hight -50)  # นำ tect ไปใส่บน screen
+    startbott2 = bigfont.render('Start', True, GREEN,BLACK)  #render text
+    startbott2Rect = startbott2.get_rect().center = ((lenght-90), hight -50)
+    capture = bigfont.render('Capture', True, WHITE, BLACK)  # render text
+    captureRect = startbott2.get_rect().center = ((lenght - 100), hight - 90)
+    capturehigh = bigfont.render('Capture', True, GREEN, BLACK)  # render text
+    capturehighRect = startbott2.get_rect().center = ((lenght - 100), hight - 90)
     # Loop until the user clicks the close button.
     done = False
     stage_clear = False
@@ -342,7 +353,14 @@ def Start_stage(num_stage):
 
     facedirection = 0
     # -------- Main Program Loop -----------
+    if move == 1:
+        key = pygame.key.get_pressed()
+        yolo()
+    # redrawGameWindow()
+    pygame.time.wait(100)
+
     while not done:
+
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -408,6 +426,7 @@ def Start_stage(num_stage):
                     pygame.time.wait(100)
                 num_text +=1
 
+
         # Limit to 60 frames per second
         clock.tick(60)
         pygame.time.wait(100)
@@ -419,6 +438,18 @@ def Start_stage(num_stage):
 
 
     ###Start Click ####
+        screen.blit(capture, captureRect)
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        # print(mouse)
+        # print(x,y)
+        # print('brain',brainX,brainY)
+        if lenght - 5 > mouse[0] > lenght - 100 and hight - 60 > mouse[1] > hight - 90:
+            screen.blit(capturehigh, capturehighRect)
+            if pygame.mouse.get_pressed() == (1, 0, 0):
+                move == 1
+        pygame.display.update()
+
         screen.blit(startbott1,startbott1Rect)
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
