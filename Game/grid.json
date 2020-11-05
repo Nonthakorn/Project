@@ -2,8 +2,8 @@
     "grid":[
        {
           "stage":1,
-          "column":4,
-          "row":4,
+          "column":5,
+          "row":5,
           "block": 0,
           "char_x":0,
           "char_y":0,

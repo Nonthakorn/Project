@@ -1,2 +1,0 @@
-pip freeze > requirement.txt
-virtualenv -p C:\Users\Python\Python38\Scripts\ Project_env
