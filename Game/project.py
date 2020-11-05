@@ -190,6 +190,7 @@ def Start_stage(num_stage):
     facedirection = 0
     lst_command = []
     win = 0
+    check_start = 0
     # -------- Main_Program_Loop -----------
     while not done:
         text_file,num_of_order = read_input()
@@ -205,7 +206,7 @@ def Start_stage(num_stage):
         screen = blitCamFrame(frame, screen)
         if check == 1:
             print(realframe)
-            cv2.imwrite("test_image/image.JPG", realframe)
+            cv2.imwrite("test_image/image1.JPG", realframe)
             import runyolo
             check = 2
         if botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED) == True:
@@ -304,10 +305,14 @@ def Start_stage(num_stage):
         if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
             if text_file[0] == 'start':
                 move = True
+            else:
+                 check_start == 0
+                
         lock_space()
         if win == 1:
             win_stage(x,y)
-
+        if check_start == 1:
+            showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE)  
 
     
 
