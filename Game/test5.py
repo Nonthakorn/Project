@@ -67,8 +67,8 @@ def Start_stage(num_stage):
         HEIGHT = round(HEIGHT *0.711)
         char_scale = round(char_scale *0.711)
         move_space = round(move_space*0.711)
-    lenght = (WIDTH*num_col) + num_col + 100+50
-    hight = (HEIGHT*num_row) + num_row + 5 + 50 +50
+    lenght = (WIDTH*num_col) + num_col + (WIDTH*3)
+    hight = (HEIGHT*num_row) + num_row + (HEIGHT*2)
     
     # Set title of screen
     pygame.display.set_caption("Robot Simulation")
@@ -92,7 +92,7 @@ def Start_stage(num_stage):
     def win_stage(x,y):
         brain_x_pos,brain_y_pos = create_grid(brainX,brainY)
         if x == brain_x_pos and y == brain_y_pos:
-            screen.blit(text_stageClear,text_stageClearRect)
+            showtext('CLEAR',lenght/3,hight/2,BLACK)
             pygame.display.update()
             pygame.time.delay(0)
             x = 0
@@ -134,18 +134,28 @@ def Start_stage(num_stage):
 
 
     ### text_and_botton
+    def botton(text,textx,texty,color,hover_col): # str input
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        my_text = bigfont.render(text, True, color)
+        my_text_hover = bigfont.render(text, True, hover_col)
+        text_width = my_text.get_width()
+        text_height = my_text.get_height()
+        screen.blit(my_text,(round(textx),round(texty)))
+        if textx +text_width > mouse[0] > textx and texty +text_height > mouse[1] > texty:
+            screen.blit(my_text_hover,(textx,texty))
+            if pygame.mouse.get_pressed() == (1, 0, 0): 
+                return True
+
+    def showtext(text,textx,texty,color):
+        my_text = bigfont.render(text, True, color)
+        text_width = my_text.get_width()
+        text_height = my_text.get_height()
+        screen.blit(my_text,(round(textx),round(texty)))
+
     bigfont = pygame.font.Font('freesansbold.ttf', 35)
-    text_stage = bigfont.render('Stage', True, WHITE,GREEN)  #render text  
-    text_stageRect = text_stage.get_rect().center = ((window_width-200),window_height- 225)  # นำ tect ไปใส่บน screen 
-    text_stagenumber = bigfont.render(str(num_stage), True, WHITE,GREEN)  #render text  
-    text_stagenumberRect = text_stagenumber.get_rect().center = ((window_width-75), window_height -225)  # นำ tect ไปใส่บน screen 
-    text_stageClear = bigfont.render('Clear', True, BLACK)  #render text  
-    text_stageClearRect = text_stageClear.get_rect().center = (((lenght-50)/2.5), hight/2.3)
-    ### Start bottom
-    startbott1 = bigfont.render('Start', True, WHITE,BLACK)  #render text  
-    startbott1Rect = startbott1.get_rect().center = ((window_width-200), window_height -150)  # นำ tect ไปใส่บน screen 
-    startbott2 = bigfont.render('Start', True, GREEN,BLACK)  #render text  
-    startbott2Rect = startbott2.get_rect().center = ((window_width-200), window_height -150)
+    # text_stageClear = bigfont.render('CLEAR', True, BLACK)  #render text  
+    # text_stageClearRect = text_stageClear.get_rect().center = (((lenght-50)/2.5), hight/2.3)
     # Loop until the user clicks the close button.
     done = False
     stage_clear = False
@@ -185,8 +195,8 @@ def Start_stage(num_stage):
         # Set the screen background
         screen.fill(BLACK)
         ## OPENCV2
-        frame = getCamFrame(color, camera)
-        screen = blitCamFrame(frame, screen)
+        # frame = getCamFrame(color, camera)
+        # screen = blitCamFrame(frame, screen)
         ##
         #set_border
         pygame.draw.rect(screen, WHITE, [25,25,window_width-50,5]) #top border
@@ -261,22 +271,18 @@ def Start_stage(num_stage):
         pygame.time.wait(100)
         redrawGameWindow()
         random_brain(brainX,brainY) # config
-        screen.blit(text_stage,text_stageRect)
-        screen.blit(text_stagenumber,text_stagenumberRect)
+        
+        showtext(str(num_stage),(window_width-75),(window_height- 225),WHITE)
+        showtext("STAGE",(window_width-200),(window_height- 225),WHITE)
+        if botton("START",window_width-200, window_height -150,WHITE,RED) == True:
+            move = True
         lock_space()
         win_stage(x,y)
 
 
 
-    ###Start Click ####
-        screen.blit(startbott1,startbott1Rect)
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
+    
 
-        if lenght - 7 > mouse[0] > lenght-97 and hight-20 > mouse[1] > hight -50 :
-            screen.blit(startbott2,startbott2Rect)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                move = True
         pygame.display.flip()
         pygame.display.update()
     
