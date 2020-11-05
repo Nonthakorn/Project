@@ -1,238 +1,30 @@
+
 import pygame
+from pygame.locals import *
+import cv2
 import random
 import math
 from tkinter import filedialog
 from tkinter import *
 import json
 import importlib
+import numpy
 import runpy
 import sys
 import os
 import py_compile
-import numpy as np
-import cv2
-from test import yolo
-default = 1
-
-##add comment check git
-def main(num_stage):
-    root = Tk()
-
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-    pygame.init()
-    sizewidth = 825
-    sizehight = 425
-    size = (900, 500) # 900 คือความกว้าง
-    screen = pygame.display.set_mode(size)
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
-    bigfont = pygame.font.Font('freesansbold.ttf', 50)
-    text_stage = bigfont.render('Stage', True, WHITE,GREEN)  #render text  
-    text_stageRect = text_stage.get_rect().center = (480, 160)  # นำ tect ไปใส่บน screen 
-
-    text_stage_num = bigfont.render(str(num_stage), True, WHITE,GREEN)  #render text  
-    text_stage_numRect = text_stage_num.get_rect().center = (530, 250)  # นำ tect ไปใส่บน screen 
-
-
-    ####
-    font = pygame.font.Font('freesansbold.ttf', 22) 
-    bigfont = pygame.font.Font('freesansbold.ttf', 30) #กำหนดฟอนต์
-    #### Start bottom ###  
-    startbot0 = font.render('Start', True, WHITE,GREEN)  #render text  
-    startbotRect0 = startbot0.get_rect().center = (255, 135)  # นำ tect ไปใส่บน screen  
-    startbot1 = font.render('Start', True, RED,GREEN)  #render text  
-    startbotRect1 = startbot1.get_rect().center = (255, 135)  # นำ tect ไปใส่บน screen  
-    ####################
-
-    #### select_stage0 bottom ###  
-    select_stage0 = font.render('Select Stage', True, WHITE,GREEN)  #render text  
-    select_stageRect0 = select_stage0.get_rect().center = (255, 235)  # นำ tect ไปใส่บน screen  
-    select_stage1 = font.render('Select Stage', True, RED,GREEN)  #render text  
-    select_stageRect1 = select_stage1.get_rect().center = (255, 235)  # นำ tect ไปใส่บน screen  
-    ####################
-
-    #### Exit bottom ###  
-    Exit0 = font.render('Exit', True, WHITE,GREEN)  #render text  
-    ExitRect0 = Exit0.get_rect().center = (255, 335)  # นำ tect ไปใส่บน screen  
-    Exit1 = font.render('Exit', True, RED,GREEN)  #render text  
-    ExitRect1 = Exit1.get_rect().center = (255, 335)  # นำ tect ไปใส่บน screen  
-    ####################
-
-
-    def startbottom():
-        screen.blit(startbot0, startbotRect0)
-        mouse = pygame.mouse.get_pos()
-        if 300 > mouse[0] > 255 and 155 > mouse[1] > 135 :
-            screen.blit(startbot1, startbotRect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                Start_stage(num_stage)
-
-    def select_stagebottom():
-        screen.blit(select_stage0, select_stageRect0)
-        mouse = pygame.mouse.get_pos()
-        if 385 > mouse[0] > 255 and 255 > mouse[1] > 235 :
-            screen.blit(select_stage1, select_stageRect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                Select_stage()
-
-
-    def exitbottom():
-        screen.blit(Exit0, ExitRect0)
-        mouse = pygame.mouse.get_pos()
-        if 295 > mouse[0] > 255 and 355  > mouse[1] > 335 :
-            screen.blit(Exit1, ExitRect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                sys.exit()
-    pygame.init()
-    run = True
-    while run:
-        screen.fill(WHITE)
-        pygame.time.delay(100)
-        pygame.draw.rect(screen, GREEN, [200,75,500,350])
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        startbottom()
-        select_stagebottom()
-        exitbottom()
-        # print(run)
-        ### mouse pos check ###
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        # print(mouse)
-        ########################
-        #### text show #####
-        screen.blit(text_stage, text_stageRect)
-        screen.blit(text_stage_num,text_stage_numRect)
-
-
-        pygame.display.update()
-    pygame.quit()
-
-def Select_stage():
-
-    root = Tk()
-
-    BLACK = (0, 0, 0)
-    WHITE = (255, 255, 255)
-    GREEN = (0, 255, 0)
-    RED = (255, 0, 0)
-    pygame.init()
-    sizewidth = 825
-    sizehight = 425
-    size = (900, 500) # 900 คือความกว้าง
-    screen = pygame.display.set_mode(size)
-
-    bigfont = pygame.font.Font('freesansbold.ttf', 50)
-    text_stage = bigfont.render('Choose Stage', True, WHITE,GREEN)  #render text  
-    text_stageRect = text_stage.get_rect().center = (260, 115)  # นำ tect ไปใส่บน screen 
-    screen = pygame.display.set_mode(size)
-    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-
-    ####
-    font = pygame.font.Font('freesansbold.ttf', 22) 
-    bigfont = pygame.font.Font('freesansbold.ttf', 30) #กำหนดฟอนต์
-    #### stage_one bottom ###  
-    stage_one_0 = font.render('Stage 1 ', True, WHITE,GREEN)  #render text  
-    stage_one_Rect0 = stage_one_0.get_rect().center = (230, 200)  # นำ tect ไปใส่บน screen  
-    stage_one_1 = font.render('Stage 1 ', True, RED,GREEN)  #render text  
-    stage_one_Rect1 = stage_one_1.get_rect().center = (230, 200)  # นำ tect ไปใส่บน screen  
-    ####################
-
-    #### stage_two bottom ###  
-    stage_two_0 = font.render('Stage 2 ', True, WHITE,GREEN)  #render text  
-    stage_two_Rect0 = stage_two_0.get_rect().center = (400, 200)  # นำ tect ไปใส่บน screen  
-    stage_two_1 = font.render('Stage 2 ', True, RED,GREEN)  #render text  
-    stage_two_Rect1 = stage_two_1.get_rect().center = (400, 200)  # นำ tect ไปใส่บน screen  
-    ####################
-
-        #### stage_three bottom ###  
-    stage_three_0 = font.render('Stage 3 ', True, WHITE,GREEN)  #render text  
-    stage_three_Rect0 = stage_three_0.get_rect().center = (570, 200)  # นำ tect ไปใส่บน screen  
-    stage_three_1 = font.render('Stage 3 ', True, RED,GREEN)  #render text  
-    stage_three_Rect1 = stage_three_1.get_rect().center = (570, 200)  # นำ tect ไปใส่บน screen  
-    ####################
-
-    #### back bottom ###  
-    back0 = font.render('back', True, WHITE,GREEN)  #render text  
-    backRect0 = back0.get_rect().center = (255, 335)  # นำ tect ไปใส่บน screen  
-    back1 = font.render('back', True, RED,GREEN)  #render text  
-    backRect1 = back1.get_rect().center = (255, 335)  # นำ tect ไปใส่บน screen  
-    ####################
-
-
-
-
-    def stage_one():
-        screen.blit(stage_one_0, stage_one_Rect0)
-        mouse = pygame.mouse.get_pos()
-        if 305 > mouse[0] > 230 and 225 > mouse[1] > 200 :
-            screen.blit(stage_one_1, stage_one_Rect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                main(1)
-
-    
-    def stage_two():
-        screen.blit(stage_two_0, stage_two_Rect0)
-        mouse = pygame.mouse.get_pos()
-        if 475 > mouse[0] > 400 and 225 > mouse[1] > 200 :
-            screen.blit(stage_two_1, stage_two_Rect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                main(2)
-    
-    
-    def stage_three():
-        screen.blit(stage_three_0, stage_three_Rect0)
-        mouse = pygame.mouse.get_pos()
-        if 645 > mouse[0] > 570 and 225 > mouse[1] > 200 :
-            screen.blit(stage_three_1, stage_three_Rect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                main(3)
-
-    def back():
-        screen.blit(back0, backRect0)
-        mouse = pygame.mouse.get_pos()
-        if 295 > mouse[0] > 255 and 355  > mouse[1] > 335 :
-            screen.blit(back1, backRect1)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                main(1)
-    pygame.init()
-    run = True
-    while run:
-        screen.fill(WHITE)
-        pygame.time.delay(100)
-        pygame.draw.rect(screen, GREEN, [200,75,500,350])
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-
-        
-        back()
-        stage_one()
-        stage_two()
-        stage_three()
-        # print(run)
-        ### mouse pos check ###
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        print(mouse)
-        ########################
-        #### text show #####
-        screen.blit(text_stage, text_stageRect)
-
-
-        pygame.display.update()
-    pygame.quit()
+import ctypes
+ctypes.windll.user32.SetProcessDPIAware()
 
 def Start_stage(num_stage):
         
-    # Initialize pygame
+    # Initialize pygame ##setscreen
     pygame.init()
-    ### config from json file ###
+    info = pygame.display.Info() 
+    screen_width,screen_height = info.current_w,info.current_h
+    window_width,window_height = screen_width,screen_height
+    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN )
+    ####### read_json file อ่าน json ##### 
     with open('grid.json') as json_file:
         data = json.load(json_file)
         for i in data['grid']:
@@ -243,74 +35,87 @@ def Start_stage(num_stage):
                 y = i['char_y']
                 brainX = i['brain_x']
                 brainY = i['brain_y']
-
             
 
-    ###input from text file ###
-    f = open("input.txt", "r") # ใช้อ่านไฟล์
-    fileinput = open("input.txt", "r")
-    lstf = []
-    for i in f.read():
-        lstf.append(i)
-    text_file = lstf
-    num_of_order = len(text_file)
+    ###input from text file ###  read_input
+    def read_input():
+        f = open("input.txt", "r") # ใช้อ่านไฟล์
+        fileinput = open("input.txt", "r")
+        lstf = []
+        for i in f.readlines(-3):
+            lstf.append(i.rstrip())
+        text_file = lstf
+        num_of_order = len(text_file)
+        return text_file,num_of_order
     num_text = 0
     move = False
 
-    # Define some colors
+    # Define some colors  Define_color
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
     RED = (255, 0, 0)
     
-    # This sets the WIDTH and HEIGHT of each grid location
+    # This sets the WIDTH and HEIGHT of each grid location  ### set_W_H 
     WIDTH = 50   
-    HEIGHT = 50     
+    HEIGHT = 50 
+    char_scale = 50
+    move_space = 50
     # This sets the margin between each cell
     MARGIN = 1
 
-    lenght = (WIDTH*num_col) + num_col + 100
-    hight = (HEIGHT*num_row) + num_row + 5
-
-    
-    # Set the HEIGHT and WIDTH of the screen
-    WINDOW_SIZE = [lenght, hight]  #config # configed
-    screen = pygame.display.set_mode(WINDOW_SIZE)
+    if screen_width <= 1900:
+        WIDTH = round(WIDTH * 0.711)
+        HEIGHT = round(HEIGHT *0.711)
+        char_scale = round(char_scale *0.711)
+        move_space = round(move_space*0.711)
+    lenght = (WIDTH*num_col) + num_col + (WIDTH*3)
+    hight = (HEIGHT*num_row) + num_row + (HEIGHT*2)
     
     # Set title of screen
     pygame.display.set_caption("Robot Simulation")
-    
-
-    # brainX = 2
-    # brainY = 3
+    ### สร้างตำแหน่งที่ตั้งของตัว จะprint error ถ้าต่ำแหน่งเกินจำนวนของ col และ row Create_def
     def create_grid(x,y):
-        if (x*50)+x >= (lenght-97 - move_space) or (y*50)+y >= (hight-5) :
+        if (x*move_space)+x+50 >= (lenght - move_space) or (y*move_space)+y+50 >= (hight-5) :
             return print('Error pos ')
         else:
-            return (x*50)+x,(y*50)+y
+            return (x*move_space)+x+50,(y*move_space)+y+50
+     ################ สร้างตัวบล็อคไม่ให้เดิน จะปลดล็อกตามด่านที่ config
+    def create_block(x,y):
+            return (x*move_space)+x+50,(y*move_space)+y+50
+
+    def lock_space():       
+        for k in range(13):
+            for m in range(13):
+                if k > num_col or m > num_row:
+                    i,j = create_block(k,m)
+                    screen.blit(char_lock, (i+2,j+3))
 
     def win_stage(x,y):
         brain_x_pos,brain_y_pos = create_grid(brainX,brainY)
         if x == brain_x_pos and y == brain_y_pos:
-            screen.blit(text_stageClear,text_stageClearRect)
+            showtext('CLEAR',lenght/3,hight/2,BLACK)
             pygame.display.update()
-            pygame.time.delay(1000)
+            pygame.time.delay(0)
             x = 0
             y = 0
-            main(num_stage)
 
-    char_front = pygame.transform.scale(pygame.image.load('char/front.png'),(50,50))
-    char_turnRight =  pygame.transform.scale(pygame.image.load('char/right.png'),(50,50))
-    char_turnLeft = pygame.transform.scale(pygame.image.load('char/left.png'),(50,50))
-    char_turnback = pygame.transform.scale(pygame.image.load('char/back.png'),(50,50))
-
-    move_space = 50
     x,y = create_grid(x,y)  #config
+            
+    ############# set_object_char
+    char_front = pygame.transform.scale(pygame.image.load('char/front.png'),(char_scale,char_scale))
+    char_turnRight =  pygame.transform.scale(pygame.image.load('char/right.png'),(char_scale,char_scale))
+    char_turnLeft = pygame.transform.scale(pygame.image.load('char/left.png'),(char_scale,char_scale))
+    char_turnback = pygame.transform.scale(pygame.image.load('char/back.png'),(char_scale,char_scale))
+    char_lock = pygame.transform.scale(pygame.image.load('char/lock.png'),(char_scale-5,char_scale-5))
+
 
     left = False
     right = False
     back = False
     front = True
+
+    ########## 
     def redrawGameWindow():
             
         if left:  
@@ -324,68 +129,117 @@ def Start_stage(num_stage):
 
     def random_brain(brainX,brainY):
         brain = pygame.image.load('char/brain.png')
-        brain = pygame.transform.scale(brain,(50,50))
+        brain = pygame.transform.scale(brain,(char_scale,char_scale))
         screen.blit(brain, (create_grid(brainX,brainY)))
         # print('x,y = ', create_grid(brainX,brainY))
         pygame.display.update()
 
-    bigfont = pygame.font.Font('freesansbold.ttf', 30)
-    text_stage = bigfont.render('Stage', True, WHITE,BLACK)  #render text
-    text_stageRect = text_stage.get_rect().center = ((lenght-90), 25)  # นำ tect ไปใส่บน screen
-    text_stagenumber = bigfont.render(str(num_stage), True, WHITE,BLACK)  #render text
-    text_stagenumberRect = text_stagenumber.get_rect().center = ((lenght-57), 75)  # นำ tect ไปใส่บน screen 
-    text_stageClear = bigfont.render('Clear', True, BLACK)  #render text  
-    text_stageClearRect = text_stageClear.get_rect().center = (((lenght-100)/2.5), hight/2.3)
-    ### Start bottom
-    startbott1 = bigfont.render('Start', True, WHITE,BLACK)  #render text  
-    startbott1Rect = startbott1.get_rect().center = ((lenght-90), hight -50)  # นำ tect ไปใส่บน screen
-    startbott2 = bigfont.render('Start', True, GREEN,BLACK)  #render text
-    startbott2Rect = startbott2.get_rect().center = ((lenght-90), hight -50)
-    capture = bigfont.render('Capture', True, WHITE, BLACK)  # render text
-    captureRect = startbott2.get_rect().center = ((lenght - 100), hight - 90)
-    capturehigh = bigfont.render('Capture', True, GREEN, BLACK)  # render text
-    capturehighRect = startbott2.get_rect().center = ((lenght - 100), hight - 90)
+
+    ### text_and_botton
+    def botton(text,textx,texty,color,hover_col): # str input
+        mouse = pygame.mouse.get_pos()
+        click = pygame.mouse.get_pressed()
+        my_text = bigfont.render(text, True, color)
+        my_text_hover = bigfont.render(text, True, hover_col)
+        text_width = my_text.get_width()
+        text_height = my_text.get_height()
+        screen.blit(my_text,(round(textx),round(texty)))
+        if textx +text_width > mouse[0] > textx and texty +text_height > mouse[1] > texty:
+            screen.blit(my_text_hover,(textx,texty))
+            if pygame.mouse.get_pressed() == (1, 0, 0): 
+                return True
+
+    def showtext(text,textx,texty,color):
+        my_text = bigfont.render(text, True, color)
+        text_width = my_text.get_width()
+        text_height = my_text.get_height()
+        screen.blit(my_text,(round(textx),round(texty)))
+        return text_height
+
+    bigfont = pygame.font.Font('freesansbold.ttf', 35)
+    # text_stageClear = bigfont.render('CLEAR', True, BLACK)  #render text  
+    # text_stageClearRect = text_stageClear.get_rect().center = (((lenght-50)/2.5), hight/2.3)
     # Loop until the user clicks the close button.
     done = False
     stage_clear = False
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
+    ######################## OPENCV #####################################
+    color=False#True#False
+    camera_index = 0
+    camera=cv2.VideoCapture(camera_index)
+    camera.set(3,800)
+    camera.set(4,600)
+    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN ) ####
 
+    def getCamFrame(color,camera):
+        retval,frame=camera.read()
+        realframe = frame
+        frame = frame.swapaxes(0, 0)
+        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+        frame=cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
+        frame=numpy.rot90(frame)
+        frame=pygame.surfarray.make_surface(frame) #I think the color error lies in this line?
+        return frame,realframe
+
+    def blitCamFrame(frame,screen):
+        screen.blit(frame,(round(window_width*0.55),30))
+        return screen
+    check = 0
     facedirection = 0
-    # -------- Main Program Loop -----------
-    if move == 1:
-        key = pygame.key.get_pressed()
-        yolo()
-    # redrawGameWindow()
-    pygame.time.wait(100)
-
+    lst_command = []
+    win = 0
+    # -------- Main_Program_Loop -----------
     while not done:
-
+        text_file,num_of_order = read_input()
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
+            if event.type == pygame.KEYDOWN:  # If user clicked close
+                if event.key == pygame.K_q:
+                    done = True  # Flag that we are done so we exit this loop
         # Set the screen background
         screen.fill(BLACK)
-    
-        # Draw the grid
-        for row in range(num_row):
-            for column in range(num_col):
+        frame,realframe = getCamFrame(color, camera)
+        screen = blitCamFrame(frame, screen)
+        if check == 1:
+            print(realframe)
+            cv2.imwrite("test_image/image.JPG", realframe)
+            import runyolo
+            check = 2
+        if botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED) == True:
+            check = 1
+        if check == 2:
+            showtext("YOLO SUCCESS!!",((MARGIN + WIDTH) * 14)+50,window_height -100,WHITE)
+        ## OPENCV2
+        ##
+        #set_border
+        pygame.draw.rect(screen, WHITE, [25,25,window_width-50,5]) #top border
+        pygame.draw.rect(screen, WHITE, [25,window_height-25,window_width-50,5]) #bottom border
+        pygame.draw.rect(screen, WHITE, [25,25,5,window_height-50]) #left border
+        pygame.draw.rect(screen, WHITE, [window_width-30,25,5,window_height-50])  #right border
+        pygame.draw.rect(screen, WHITE, [((MARGIN + WIDTH) * 14)+25,25,5,window_height-50])  #game border
+        pygame.draw.rect(screen, WHITE, [25,((MARGIN + WIDTH) * 14)+25,(MARGIN + WIDTH) * 14,5])
+
+        # Draw_the_grid
+        for row in range(13):
+            for column in range(13):
                 color = WHITE
                 pygame.draw.rect(screen,
                                 color,
-                                [(MARGIN + WIDTH) * column + MARGIN,
-                                (MARGIN + HEIGHT) * row + MARGIN,
+                                [(MARGIN + WIDTH) * column + MARGIN+50,
+                                (MARGIN + HEIGHT) * row + MARGIN+50,
                                 WIDTH,
                                 HEIGHT])
 
 
-        ### move logic
+        ### move_logic
         if move == True:
             key = pygame.key.get_pressed()
             if num_text < num_of_order:
                 # if key[pygame.K_LEFT]:
-                if text_file[num_text] == 'L':
-                    print('l')
+                if text_file[num_text] == 'turn left':
                     facedirection +=1 
                     if facedirection >3:
                         facedirection =0
@@ -412,7 +266,7 @@ def Start_stage(num_stage):
                     redrawGameWindow()
                     pygame.time.wait(100)
                 # if key[pygame.K_SPACE]:
-                if text_file[num_text] == 'M':
+                if text_file[num_text] == 'move':
                     # print('m')
                     if right == True and x >= move_space:
                         x -= move_space+MARGIN
@@ -424,53 +278,84 @@ def Start_stage(num_stage):
                         y += move_space+MARGIN
                     redrawGameWindow()
                     pygame.time.wait(100)
+                if text_file[num_text] == 'end':
+                    win = 1
+                gap = showtext(text_file[num_text],((MARGIN + WIDTH) * 14)+50,100,BLACK)
+                lst_command.append(gap*num_text)
+                pygame.time.wait(500)
                 num_text +=1
+        
+        # for h in len(lst_command):
+        #     showtext(text_file[h],((MARGIN + WIDTH) * 14)+50,150+lst_command[h],WHITE)
+        for i in range(len(lst_command)):
+            showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
 
 
         # Limit to 60 frames per second
+        #call_funtion
         clock.tick(60)
         pygame.time.wait(100)
         redrawGameWindow()
         random_brain(brainX,brainY) # config
-        screen.blit(text_stage,text_stageRect)
-        screen.blit(text_stagenumber,text_stagenumberRect)
-
-
-
-    ###Start Click ####
-        screen.blit(capture, captureRect)
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        # print(mouse)
-        # print(x,y)
-        # print('brain',brainX,brainY)
-        if lenght - 5 > mouse[0] > lenght - 100 and hight - 60 > mouse[1] > hight - 90:
-            screen.blit(capturehigh, capturehighRect)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
-                move == 1
-        pygame.display.update()
-
-        screen.blit(startbott1,startbott1Rect)
-        mouse = pygame.mouse.get_pos()
-        click = pygame.mouse.get_pressed()
-        # print(mouse)
-        # print(x,y)
-        # print('brain',brainX,brainY)
-        if lenght - 7 > mouse[0] > lenght-97 and hight-20 > mouse[1] > hight -50 :
-            screen.blit(startbott2,startbott2Rect)
-            if pygame.mouse.get_pressed() == (1, 0, 0):
+        
+        showtext("Command",((MARGIN + WIDTH) * 14)+50,50,WHITE)
+        showtext(str(num_stage),(window_width-75),(window_height- 150),WHITE)
+        showtext("STAGE",(window_width-200),(window_height- 150),WHITE)
+        if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
+            if text_file[0] == 'start':
                 move = True
-        pygame.display.update()
+        lock_space()
+        if win == 1:
+            win_stage(x,y)
 
-        win_stage(x,y)
-        # print(x,y)
-        # Go ahead and update the screen with what we've drawn.
+
+    
+
         pygame.display.flip()
         pygame.display.update()
     
-
-
-    # Be IDLE friendly. If you forget this line, the program will 'hang'
-    # on exit.
     pygame.quit()
-main(default)
+    cv2.destroyAllWindows()
+Start_stage(1)
+
+
+def open_cv():
+    pygame.init()
+    info = pygame.display.Info() # You have to call this before pygame.display.set_mode()
+    screen_width,screen_height = info.current_w,info.current_h
+    window_width,window_height = screen_width,screen_height
+
+    color=False#True#False
+    camera_index = 0
+    camera=cv2.VideoCapture(camera_index)
+    camera.set(3,640)
+    camera.set(4,480)
+    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN )
+
+    def getCamFrame(color,camera):
+        retval,frame=camera.read()
+        frame = frame.swapaxes(0, 0)
+        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+        frame=cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
+        frame=numpy.rot90(frame)
+        frame=pygame.surfarray.make_surface(frame) #I think the color error lies in this line?
+        return frame
+
+    def blitCamFrame(frame,screen):
+        screen.blit(frame,(window_width/2,30))
+        return screen
+
+
+    running=True
+    while running:
+        screen.fill(255)
+        for event in pygame.event.get(): #process events since last loop cycle
+            if event.type == KEYDOWN:
+                running=False
+        pygame.draw.rect(screen, [255,255,255], [25,25,window_width-50,5]) #top border
+        frame = getCamFrame(color, camera)
+        screen = blitCamFrame(frame, screen)
+        pygame.display.flip()
+    pygame.quit()
+    cv2.destroyAllWindows()

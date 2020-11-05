@@ -12,7 +12,7 @@ def yolo():
     outputlayers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
     colors= np.random.uniform(0,255,size=(len(classes),3))
     #loading image
-    img = cv2.imread("test_image/test.JPG")
+    img = cv2.imread("test_image/image.JPG")
     img = cv2.resize(img,None,fx=0.4,fy=0.3)
     height,width,channels = img.shape
     blob = cv2.dnn.blobFromImage(img,0.00392,(416,416),(0,0,0),True,crop=False)
@@ -63,9 +63,9 @@ def yolo():
             # print(label)
             lst.append([x, y, label])
             # print(x, y)
-    cv2.imshow("prediction", img)
-    cv2.waitKey(10)
-    cv2.destroyAllWindows()
+    # cv2.imshow("prediction", img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
     sorted(lst, key=lambda x: x[-2])
    
     df = pd.DataFrame(sorted(lst, key=lambda x: x[1]), columns=['X', 'Y', 'label'])
