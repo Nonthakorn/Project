@@ -41,11 +41,12 @@ def Start_stage(num_stage):
     f = open("input.txt", "r") # ใช้อ่านไฟล์
     fileinput = open("input.txt", "r")
     lstf = []
-    for i in f.read():
-        lstf.append(i)
+    for i in f.readlines(-3):
+        lstf.append(i.rstrip())
     text_file = lstf
     num_of_order = len(text_file)
     num_text = 0
+    print(len(text_file))
     move = False
 
     # Define some colors  Define_color
@@ -223,7 +224,7 @@ def Start_stage(num_stage):
             key = pygame.key.get_pressed()
             if num_text < num_of_order:
                 # if key[pygame.K_LEFT]:
-                if text_file[num_text] == 'L':
+                if text_file[num_text] == 'turn left':
                     print('l')
                     facedirection +=1 
                     if facedirection >3:
@@ -251,7 +252,7 @@ def Start_stage(num_stage):
                     redrawGameWindow()
                     pygame.time.wait(100)
                 # if key[pygame.K_SPACE]:
-                if text_file[num_text] == 'M':
+                if text_file[num_text] == 'move':
                     # print('m')
                     if right == True and x >= move_space:
                         x -= move_space+MARGIN
@@ -275,7 +276,8 @@ def Start_stage(num_stage):
         showtext(str(num_stage),(window_width-75),(window_height- 225),WHITE)
         showtext("STAGE",(window_width-200),(window_height- 225),WHITE)
         if botton("START",window_width-200, window_height -150,WHITE,RED) == True:
-            move = True
+            if text_file[0] == 'start':
+                move = True
         lock_space()
         win_stage(x,y)
 
