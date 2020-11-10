@@ -14,6 +14,7 @@ import sys
 import os
 import py_compile
 import ctypes
+import runyolo
 ctypes.windll.user32.SetProcessDPIAware()
 
 def Start_stage(num_stage):
@@ -202,17 +203,26 @@ def Start_stage(num_stage):
                     done = True  # Flag that we are done so we exit this loop
         # Set the screen background
         screen.fill(BLACK)
+
+
         frame,realframe = getCamFrame(color, camera)
         screen = blitCamFrame(frame, screen)
         if check == 1:
-            print(realframe)
             cv2.imwrite("test_image/image1.JPG", realframe)
-            import runyolo
+            print('capture sucsuees')
             check = 2
-        if botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED) == True:
+
+        if check == 2 :
+            runyolo.yolo()
+            check = 3
+        yolo_check = botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED)
+        if yolo_check:
             check = 1
-        if check == 2:
+        if check == 3:
             showtext("YOLO SUCCESS!!",((MARGIN + WIDTH) * 14)+50,window_height -100,WHITE)
+            yolo_check = None
+        print(yolo_check)
+        print(check)
         ## OPENCV2
         ##
         #set_border
@@ -288,8 +298,11 @@ def Start_stage(num_stage):
         
         # for h in len(lst_command):
         #     showtext(text_file[h],((MARGIN + WIDTH) * 14)+50,150+lst_command[h],WHITE)
-        for i in range(len(lst_command)):
-            showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
+        if num_of_order == 0:
+            showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+50,100+75,WHITE)
+        else:
+            for i in range(len(lst_command)):
+                showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
 
 
         # Limit to 60 frames per second
