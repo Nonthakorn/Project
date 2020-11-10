@@ -96,4 +96,4 @@ def yolo():
     df2 = pd.DataFrame(lst, columns=['label'])
     df2.to_csv('input.txt', index=False, header=False)
     print("Sucessfully please check input.txt")
-yolo()
+
