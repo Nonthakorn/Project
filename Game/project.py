@@ -78,6 +78,12 @@ def Start_stage(num_stage):
         char_scale = round(char_scale *0.711)
         move_space = round(move_space*0.711)
         bigfont = pygame.font.Font('freesansbold.ttf', round(35*0.711))
+    # elif screen_width >= 2000:
+    #     WIDTH = round(WIDTH * 3840/1920)
+    #     HEIGHT = round(HEIGHT *3840/1920)
+    #     char_scale = round(char_scale *3840/1920)
+    #     move_space = round(move_space*3840/1920)
+    #     bigfont = pygame.font.Font('freesansbold.ttf', round(35*3840/1920))
     lenght = (WIDTH*num_col) + num_col + (WIDTH*3)
     hight = (HEIGHT*num_row) + num_row + (HEIGHT*2)
     
@@ -108,14 +114,16 @@ def Start_stage(num_stage):
             y = 2
             print("win")
     def collide(x,y):
+        x_collinde = True
+        y_collinde = True
         building_x_pos,building_y_pos = create_grid(box_x,box_y)
-        if x < abs(building_x_pos - 1) and y < abs(building_y_pos-1):
+        if x < abs(building_x_pos - move_space) and y < abs(building_y_pos-move_space):
             x_collinde = False
             y_collinde = False
-        elif x < abs(building_x_pos - 1):
+        elif x < abs(building_x_pos - move_space):
             x_collinde = True
             y_collinde = False
-        elif y < abs(building_y_pos - 1):
+        elif y < abs(building_y_pos - move_space):
             x_collinde = False
             y_collinde = True
         return x_collinde,y_collinde
@@ -181,26 +189,38 @@ def Start_stage(num_stage):
     # text_stageClearRect = text_stageClear.get_rect().center = (((lenght-50)/2.5), hight/2.3)
     # Loop until the user clicks the close button.
     done = False
-    stage_clear = False
+    scence = False
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
     ######################## OPENCV #####################################
     color=False#True#False
     camera_index = 0
     camera=cv2.VideoCapture(camera_index)
-    camera.set(3,800)
+    camera.set(3,600)
     camera.set(4,600)
-    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN ) ####
+    if scence == True:
+        screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN ) ####
 
-    def getCamFrame(color,camera):
+    def getCamFrame(camera):
         retval,frame=camera.read()
-        realframe = frame
         frame = frame.swapaxes(0, 0)
-        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+
         # frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
         # frame=cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
-        frame=numpy.rot90(frame)
-        frame=pygame.surfarray.make_surface(frame) #I think the color error lies in this line?
+
+        frame = numpy.fliplr(frame)
+        frame = numpy.rot90(frame)
+        frame = numpy.rot90(frame)
+        frame = numpy.fliplr(frame)
+
+        realframe = frame
+        frame = numpy.fliplr(frame)
+        frame = numpy.rot90(frame)
+
+        #frame = numpy.fliplr(frame)
+        #frame = numpy.rot90(frame)
+        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
+        frame=pygame.surfarray.make_surface(frame)
         return frame,realframe
 
     def blitCamFrame(frame,screen):
@@ -212,11 +232,14 @@ def Start_stage(num_stage):
     win = 0
     check_start = 0
     text_file,num_of_order = read_input()
+    blank_text = [""]
     for j in range(num_of_order): 
         lst_command.append(35*j)
     # -------- Main_Program_Loop -----------
     pygame.display.update()
     while not done:
+        x_collinde, y_collinde = collide(x, y)
+        print(x_collinde , y_collinde ,x )
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -227,8 +250,8 @@ def Start_stage(num_stage):
         screen.fill(BLACK)
 
 
-        frame,realframe = getCamFrame(color, camera)
-        # screen = blitCamFrame(frame, screen)
+        frame,realframe = getCamFrame(camera)
+        screen = blitCamFrame(frame, screen)
         if check == 1:
             cv2.imwrite("test_image/image1.JPG", realframe)
             print('capture sucsuees')
@@ -268,9 +291,11 @@ def Start_stage(num_stage):
 
         ### move_logic
         if move == True:
+
             key = pygame.key.get_pressed()
             # if move == True:
             if num_text < num_of_order:
+                x_collinde, y_collinde = collide(x, y)
                 # if key[pygame.K_LEFT]:
                 if text_file[num_text] == 'turn left':
                     facedirection +=1 
@@ -301,24 +326,43 @@ def Start_stage(num_stage):
                 # if key[pygame.K_SPACE]:
                 if text_file[num_text] == 'move':
                     # print('m')
-                    if x_collinde == False and y_collinde == True:
-                        if right == True and x >= move_space +move_space:
-                            x -= move_space+MARGIN
-                        elif left == True and x <= lenght - move_space - move_space:
-                            x += move_space+MARGIN
-                    elif x_collinde == True and y_collinde == False:
-                        if back == True and y >= move_space + move_space:
-                            y -= move_space+MARGIN
-                        elif front == True and y <=hight - move_space:
-                            y += move_space+MARGIN
+                    if box == True:
+                        if x_collinde == False and y_collinde == False:
+                            if right == True and x >= move_space + move_space:
+                                x -= move_space + MARGIN
+                            elif left == True and x <= lenght - move_space - move_space:
+                                x += move_space + MARGIN
+                            elif back == True and y >= move_space + move_space:
+                                y -= move_space + MARGIN
+                            elif front == True and y <= hight - move_space:
+                                y += move_space + MARGIN
+                        elif x_collinde == False and y_collinde == True:
+                            if right == True and x >= move_space +move_space:
+                                x -= move_space+MARGIN
+                            elif left == True and x <= lenght - move_space - move_space:
+                                x += move_space+MARGIN
+                        elif x_collinde == True and y_collinde == False:
+                            if back == True and y >= move_space + move_space:
+                                y -= move_space+MARGIN
+                            elif front == True and y <=hight - move_space:
+                                y += move_space+MARGIN
+                        else:
+                            pass
                     else:
-                        pass
+                        if right == True and x >= move_space + move_space:
+                            x -= move_space + MARGIN
+                        elif left == True and x <= lenght - move_space - move_space:
+                            x += move_space + MARGIN
+                        elif back == True and y >= move_space + move_space:
+                            y -= move_space + MARGIN
+                        elif front == True and y <= hight - move_space:
+                            y += move_space + MARGIN
                     redrawGameWindow()
                     pygame.time.wait(100)
                 if text_file[num_text] == 'end':
                     win = 1
                 showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
-                pygame.time.wait(500)
+                pygame.time.wait(700)
                 num_text +=1
         if num_of_order == 0:
             showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
@@ -330,8 +374,7 @@ def Start_stage(num_stage):
 
         # Limit to 60 frames per second
         #call_funtion
-        clock.tick(60)
-        pygame.time.wait(100)
+        # clock.tick(60)
         redrawGameWindow()
         random_brain(brainX,brainY) # config
         if box == True:
@@ -339,16 +382,19 @@ def Start_stage(num_stage):
         
         showtext("Command",((MARGIN + WIDTH) * 14)+50,50,WHITE)
         showtext("STAGE",(window_width-200),(window_height- 150),WHITE)
-        showtext(str(stage),(window_width-100),(window_height- 150),WHITE)
+        showtext(str(stage),(window_width-75),(window_height- 150),WHITE)
 
-        x_collinde,y_collinde = collide(x,y)
+
 
         if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
             if text_file[0] == 'start':
                 move = True
             else:
                  check_start == 0
-        if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True: 
+        if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True:
+            t_f = open("input.txt", "w")
+            t_f.write("")
+            t_f.close()
             Start_stage(num_stage)      
         lock_space()
         if win == 1:
@@ -357,11 +403,11 @@ def Start_stage(num_stage):
             showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE)  
 
         #### Stage ####
-        if botton("STAGE 1",window_width+75 -window_width, window_height -200,WHITE,RED) == True: 
+        if botton("STAGE 1",window_width+50 -window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage1.json")
-        if botton("STAGE 2",window_width+225 - window_width, window_height -200,WHITE,RED) == True: 
+        elif botton("STAGE 2",window_width+250 - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage2.json")
-        if botton("STAGE 3 ",window_width+375 - window_width, window_height -200,WHITE,RED) == True: 
+        elif botton("STAGE 3 ",window_width+450 - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage3.json")
 
         pygame.display.flip()
