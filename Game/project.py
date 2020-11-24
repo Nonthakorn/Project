@@ -24,7 +24,7 @@ def Start_stage(num_stage):
     info = pygame.display.Info() 
     screen_width,screen_height = info.current_w,info.current_h
     window_width,window_height = screen_width,screen_height
-    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN )
+    screen = pygame.display.set_mode(((window_width,window_height)), pygame.FULLSCREEN )
     ####### read_json file อ่าน json ##### 
     with open(num_stage) as json_file:
         data = json.load(json_file)
@@ -112,7 +112,7 @@ def Start_stage(num_stage):
             pygame.time.delay(0)
             x = 0
             y = 2
-            print("win")
+            # print("win")
     def collide(x,y):
         x_collinde = True
         y_collinde = True
@@ -165,7 +165,7 @@ def Start_stage(num_stage):
         screen.blit(building, (create_grid(building_X,building_Y)))
     ### text_and_botton
     def botton(text,textx,texty,color,hover_col): # str input
-        mouse = pygame.mouse.get_pos()
+        
         click = pygame.mouse.get_pressed()
         my_text = bigfont.render(text, True, color)
         my_text_hover = bigfont.render(text, True, hover_col)
@@ -195,11 +195,11 @@ def Start_stage(num_stage):
     ######################## OPENCV #####################################
     color=False#True#False
     camera_index = 0
-    camera=cv2.VideoCapture(camera_index)
+    camera=cv2.VideoCapture(camera_index,cv2.CAP_DSHOW)
     camera.set(3,600)
     camera.set(4,600)
     if scence == True:
-        screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN ) ####
+        screen = pygame.display.set_mode(((window_width,window_height)), pygame.FULLSCREEN ) ####
 
     def getCamFrame(camera):
         retval,frame=camera.read()
@@ -238,14 +238,17 @@ def Start_stage(num_stage):
     # -------- Main_Program_Loop -----------
     pygame.display.update()
     while not done:
+        mouse = pygame.mouse.get_pos()
         x_collinde, y_collinde = collide(x, y)
-        print(x_collinde , y_collinde ,x )
+        # print(x_collinde , y_collinde ,x )
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
+                exit()
             if event.type == pygame.KEYDOWN:  # If user clicked close
                 if event.key == pygame.K_q:
                     done = True  # Flag that we are done so we exit this loop
+                    exit()
         # Set the screen background
         screen.fill(BLACK)
 
@@ -254,19 +257,29 @@ def Start_stage(num_stage):
         screen = blitCamFrame(frame, screen)
         if check == 1:
             cv2.imwrite("test_image/image1.JPG", realframe)
-            print('capture sucsuees')
+            if num_of_order != 0:
+                num_img =  open ("num_img.txt", "r").read()
+                tmp_num_img = int(num_img) 
+                cv2.imwrite("train_image/image%s.JPG" %str(tmp_num_img), realframe)
+                print("cap_train_success")
+                tmp_num_img = int(num_img) + 1
+                num_img =  open ("num_img.txt", "w")
+                num_img.write(str(tmp_num_img))
+                num_img.close()
             check = 2
-
-        if check == 2 :
-            runyolo.yolo()
-            Start_stage(num_stage)
-            check = 3
-        yolo_check = botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED)
-        if yolo_check:
-            check = 1
-        if check == 3:
-            showtext("YOLO SUCCESS!!",((MARGIN + WIDTH) * 14)+50,window_height -100,WHITE)
-            yolo_check = None
+        try:
+            if check == 2 :
+                runyolo.yolo()
+                Start_stage(num_stage)
+                check = 3
+            yolo_check = botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED)
+            if yolo_check:
+                check = 1
+            if check == 3:
+                showtext("YOLO SUCCESS!!",((MARGIN + WIDTH) * 14)+50,window_height -100,WHITE)
+                yolo_check = None
+        finally:
+            pass
         ## OPENCV2
         
         #set_border
@@ -415,46 +428,7 @@ def Start_stage(num_stage):
     
     pygame.quit()
     cv2.destroyAllWindows()
-Start_stage("map/stage1.json")
-
-
-def open_cv():
-    pygame.init()
-    info = pygame.display.Info() # You have to call this before pygame.display.set_mode()
-    screen_width,screen_height = info.current_w,info.current_h
-    window_width,window_height = screen_width,screen_height
-
-    color=False#True#False
-    camera_index = 0
-    camera=cv2.VideoCapture(camera_index)
-    camera.set(3,640)
-    camera.set(4,480)
-    screen = pygame.display.set_mode((window_width,window_height), pygame.FULLSCREEN )
-
-    def getCamFrame(color,camera):
-        retval,frame=camera.read()
-        frame = frame.swapaxes(0, 0)
-        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
-        frame=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
-        frame=cv2.cvtColor(frame,cv2.COLOR_GRAY2RGB)
-        frame=numpy.rot90(frame)
-        frame=pygame.surfarray.make_surface(frame) #I think the color error lies in this line?
-        return frame
-
-    def blitCamFrame(frame,screen):
-        screen.blit(frame,(window_width/2,30))
-        return screen
-
-
-    running=True
-    while running:
-        screen.fill(255)
-        for event in pygame.event.get(): #process events since last loop cycle
-            if event.type == KEYDOWN:
-                running=False
-        pygame.draw.rect(screen, [255,255,255], [25,25,window_width-50,5]) #top border
-        frame = getCamFrame(color, camera)
-        screen = blitCamFrame(frame, screen)
-        pygame.display.flip()
-    pygame.quit()
-    cv2.destroyAllWindows()
+try:
+    Start_stage("map/stage1.json")
+finally:
+    pass
