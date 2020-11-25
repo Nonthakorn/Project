@@ -120,13 +120,16 @@ def Start_stage(num_stage):
         if x < abs(building_x_pos - move_space) and y < abs(building_y_pos-move_space):
             x_collinde = False
             y_collinde = False
-        elif x < abs(building_x_pos - move_space):
+        elif x < abs(building_x_pos - move_space-box_x):
             x_collinde = True
             y_collinde = False
-        elif y < abs(building_y_pos - move_space):
+        elif y < abs(building_y_pos - move_space-box_y):
             x_collinde = False
             y_collinde = True
-        return x_collinde,y_collinde
+        else:
+            x_collinde = True
+            y_collinde = True
+        return x_collinde,y_collinde,building_x_pos,building_y_pos
     x,y = create_grid(x,y)  #config
     ############# set_object_char
     char_front = pygame.transform.scale(pygame.image.load('char/front.png'),(char_scale,char_scale))
@@ -239,8 +242,8 @@ def Start_stage(num_stage):
     pygame.display.update()
     while not done:
         mouse = pygame.mouse.get_pos()
-        x_collinde, y_collinde = collide(x, y)
-        # print(x_collinde , y_collinde ,x )
+        x_collinde, y_collinde,building_x_pos,building_y_pos = collide(x, y)
+        
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -256,7 +259,7 @@ def Start_stage(num_stage):
         frame,realframe = getCamFrame(camera)
         screen = blitCamFrame(frame, screen)
         if check == 1:
-            cv2.imwrite("test_image/image1.JPG", realframe)
+            cv2.imwrite("test_image/image50.JPG", realframe)
             if num_of_order != 0:
                 num_img =  open ("num_img.txt", "r").read()
                 tmp_num_img = int(num_img) 
@@ -308,7 +311,7 @@ def Start_stage(num_stage):
             key = pygame.key.get_pressed()
             # if move == True:
             if num_text < num_of_order:
-                x_collinde, y_collinde = collide(x, y)
+                # x_collinde, y_collinde = collide(x, y)
                 # if key[pygame.K_LEFT]:
                 if text_file[num_text] == 'turn left':
                     facedirection +=1 
@@ -360,7 +363,14 @@ def Start_stage(num_stage):
                             elif front == True and y <=hight - move_space:
                                 y += move_space+MARGIN
                         else:
-                            pass
+                            if right == True and x >= move_space + move_space:
+                                x -= move_space + MARGIN
+                            elif left == True and x <= lenght - move_space - move_space:
+                                x += move_space + MARGIN
+                            elif back == True and y >= move_space + move_space:
+                                y -= move_space + MARGIN
+                            elif front == True and y <= hight - move_space:
+                                y += move_space + MARGIN
                     else:
                         if right == True and x >= move_space + move_space:
                             x -= move_space + MARGIN
@@ -376,6 +386,7 @@ def Start_stage(num_stage):
                     win = 1
                 showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
                 pygame.time.wait(700)
+                print(x,x_collinde ,building_x_pos,building_y_pos, y_collinde ,y )
                 num_text +=1
         if num_of_order == 0:
             showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
