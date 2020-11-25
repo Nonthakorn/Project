@@ -1,6 +1,9 @@
 start
+turn left
 move
 move
+turn left
+turn left
 turn left
 move
 move
