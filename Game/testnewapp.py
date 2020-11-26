@@ -39,7 +39,8 @@ def Start_stage(num_stage):
             box = i['box']
             box_x = i['box_x']
             box_y = i['box_y']
-            
+    box_x = [2,2]
+    box_y = [0,2]
     ###input from text file ###  read_input
     def read_input():
         f = open("input.txt", "r") # ใช้อ่านไฟล์
@@ -95,6 +96,17 @@ def Start_stage(num_stage):
             return print('Error pos ')
         else:
             return (x*move_space)+x+50,(y*move_space)+y+50
+
+    def create_box_grid(x,y):
+        box_x = []
+        box_y = []
+        for i,j in zip(x,y):
+            if (i*move_space)+i+50 >= (lenght) or (j*move_space)+j+50 >= (hight) :
+                return print('Error pos ')
+            else:
+                box_x.append((i*move_space)+i+50)
+                box_y.append((j*move_space)+j+50)
+        return box_x,box_y
      ################ สร้างตัวบล็อคไม่ให้เดิน จะปลดล็อกตามด่านที่ config
     def create_block(x,y):
             return (x*move_space)+x+50,(y*move_space)+y+50
@@ -116,17 +128,26 @@ def Start_stage(num_stage):
     def collide(x,y):
         x_collinde = True
         y_collinde = True
-        building_x_pos,building_y_pos = create_grid(box_x,box_y)
-        if x < abs(building_x_pos - move_space) and y < abs(building_y_pos-move_space):
-            x_collinde = False
-            y_collinde = False
-        elif x < abs(building_x_pos - move_space):
-            x_collinde = True
-            y_collinde = False
-        elif y < abs(building_y_pos - move_space):
-            x_collinde = False
-            y_collinde = True
-        return x_collinde,y_collinde
+        building_x_pos,building_y_pos = create_box_grid(box_x,box_y)
+        k = 0
+        for i,j in zip(building_x_pos,building_y_pos):
+            if x < abs(i - move_space) and y < abs(j-move_space):
+                x_collinde = False
+                y_collinde = False
+            elif x < abs(i - move_space-box_x[k]):
+                x_collinde = True
+                y_collinde = False
+            elif y < abs(j - move_space-box_y[k]):
+                x_collinde = False
+                y_collinde = True
+            else:
+                x_collinde = True
+                y_collinde = True
+            print('i',i,j)
+            print(x,abs(i - move_space-box_x[k]))
+            k +=1
+        print('building_x_pos,building_y_pos', building_x_pos,building_y_pos)
+        return x_collinde,y_collinde,i,j
     x,y = create_grid(x,y)  #config
     ############# set_object_char
     char_front = pygame.transform.scale(pygame.image.load('char/front.png'),(char_scale,char_scale))
@@ -160,9 +181,10 @@ def Start_stage(num_stage):
         # print('x,y = ', create_grid(brainX,brainY))
 
     def box_block(building_X,building_Y):
-        building = pygame.image.load('char/building.png')
-        building = pygame.transform.scale(building,(char_scale,char_scale))
-        screen.blit(building, (create_grid(building_X,building_Y)))
+        for i,j in zip(building_X,building_Y):
+            building = pygame.image.load('char/building.png')
+            building = pygame.transform.scale(building,(char_scale,char_scale))
+            screen.blit(building, (create_grid(i,j)))
     ### text_and_botton
     def botton(text,textx,texty,color,hover_col): # str input
         
@@ -235,12 +257,13 @@ def Start_stage(num_stage):
     blank_text = [""]
     for j in range(num_of_order): 
         lst_command.append(35*j)
+    lst = [1,3,4]
     # -------- Main_Program_Loop -----------
     pygame.display.update()
     while not done:
         mouse = pygame.mouse.get_pos()
-        x_collinde, y_collinde = collide(x, y)
-        # print(x_collinde , y_collinde ,x )
+        
+        
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
                 done = True  # Flag that we are done so we exit this loop
@@ -253,20 +276,20 @@ def Start_stage(num_stage):
         screen.fill(BLACK)
 
 
-        # frame,realframe = getCamFrame(camera)
-        # screen = blitCamFrame(frame, screen)
-        # if check == 1:
-        #     cv2.imwrite("test_image/image1.JPG", realframe)
-        #     if num_of_order != 0:
-        #         num_img =  open ("num_img.txt", "r").read()
-        #         tmp_num_img = int(num_img) 
-        #         cv2.imwrite("train_image/image%s.JPG" %str(tmp_num_img), realframe)
-        #         print("cap_train_success")
-        #         tmp_num_img = int(num_img) + 1
-        #         num_img =  open ("num_img.txt", "w")
-        #         num_img.write(str(tmp_num_img))
-        #         num_img.close()
-        #     check = 2
+        frame,realframe = getCamFrame(camera)
+        screen = blitCamFrame(frame, screen)
+        if check == 1:
+            cv2.imwrite("test_image/image50.JPG", realframe)
+            if num_of_order != 0:
+                num_img =  open ("num_img.txt", "r").read()
+                tmp_num_img = int(num_img) 
+                cv2.imwrite("train_image/image%s.JPG" %str(tmp_num_img), realframe)
+                print("cap_train_success")
+                tmp_num_img = int(num_img) + 1
+                num_img =  open ("num_img.txt", "w")
+                num_img.write(str(tmp_num_img))
+                num_img.close()
+            check = 2
         try:
             if check == 2 :
                 runyolo.yolo()
@@ -306,11 +329,11 @@ def Start_stage(num_stage):
         if move == True:
 
             key = pygame.key.get_pressed()
-            if move == True:
-            # if num_text < num_of_order:
-                x_collinde, y_collinde = collide(x, y)
-                if key[pygame.K_LEFT]:
-                # if text_file[num_text] == 'turn left':
+            # if move == True:
+            if num_text < num_of_order:
+                # x_collinde, y_collinde = collide(x, y)
+                # if key[pygame.K_LEFT]:
+                if text_file[num_text] == 'turn left':
                     facedirection +=1 
                     if facedirection >3:
                         facedirection =0
@@ -336,10 +359,11 @@ def Start_stage(num_stage):
                         front = False
                     redrawGameWindow()
                     pygame.time.wait(100)
-                if key[pygame.K_SPACE]:
-                # if text_file[num_text] == 'move':
+                # if key[pygame.K_SPACE]:
+                if text_file[num_text] == 'move':
                     # print('m')
                     if box == True:
+                        x_collinde, y_collinde,building_x_pos,building_y_pos = collide(x, y)
                         if x_collinde == False and y_collinde == False:
                             if right == True and x >= move_space + move_space:
                                 x -= move_space + MARGIN
@@ -360,7 +384,15 @@ def Start_stage(num_stage):
                             elif front == True and y <=hight - move_space:
                                 y += move_space+MARGIN
                         else:
-                            pass
+                            if right == True and x >= move_space + move_space:
+                                x -= move_space + MARGIN
+                            elif left == True and x <= lenght - move_space - move_space:
+                                x += move_space + MARGIN
+                            elif back == True and y >= move_space + move_space:
+                                y -= move_space + MARGIN
+                            elif front == True and y <= hight - move_space:
+                                y += move_space + MARGIN
+                        print(x_collinde,y_collinde)
                     else:
                         if right == True and x >= move_space + move_space:
                             x -= move_space + MARGIN
@@ -372,16 +404,16 @@ def Start_stage(num_stage):
                             y += move_space + MARGIN
                     redrawGameWindow()
                     pygame.time.wait(100)
-                # if text_file[num_text] == 'end':
-                #     win = 1
-                # showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
+                if text_file[num_text] == 'end':
+                    win = 1
+                showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
                 pygame.time.wait(700)
                 num_text +=1
-        # if num_of_order == 0:
-        #     showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
-        # else:
-        #     for i in range(len(lst_command)):
-        #         showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
+        if num_of_order == 0:
+            showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
+        else:
+            for i in range(len(lst_command)):
+                showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
     
 
 
@@ -392,7 +424,6 @@ def Start_stage(num_stage):
         random_brain(brainX,brainY) # config
         if box == True:
             box_block(box_x,box_y)
-        
         showtext("Command",((MARGIN + WIDTH) * 14)+50,50,WHITE)
         showtext("STAGE",(window_width-200),(window_height- 150),WHITE)
         showtext(str(stage),(window_width-75),(window_height- 150),WHITE)
@@ -400,11 +431,10 @@ def Start_stage(num_stage):
 
 
         if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
-            move = True
-            # if text_file[0] == 'start':
-            #     move = True
-            # else:
-            #      check_start == 0
+            if text_file[0] == 'start':
+                move = True
+            else:
+                 check_start == 0
         if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True:
             t_f = open("input.txt", "w")
             t_f.write("")
@@ -428,7 +458,7 @@ def Start_stage(num_stage):
         pygame.display.update()
     
     pygame.quit()
-    # cv2.destroyAllWindows()
+    cv2.destroyAllWindows()
 try:
     Start_stage("map/stage1.json")
 finally:
