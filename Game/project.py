@@ -120,10 +120,10 @@ def Start_stage(num_stage):
         if x < abs(building_x_pos - move_space) and y < abs(building_y_pos-move_space):
             x_collinde = False
             y_collinde = False
-        elif x < abs(building_x_pos - move_space-box_x):
+        elif x < abs(building_x_pos - move_space):
             x_collinde = True
             y_collinde = False
-        elif y < abs(building_y_pos - move_space-box_y):
+        elif y < abs(building_y_pos - move_space):
             x_collinde = False
             y_collinde = True
         else:
@@ -409,12 +409,17 @@ def Start_stage(num_stage):
         showtext(str(stage),(window_width-75),(window_height- 150),WHITE)
 
 
-
-        if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
-            if text_file[0] == 'start':
-                move = True
-            else:
-                 check_start == 0
+        try:
+            if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
+                if len(text_file) >=1 :
+                    if text_file[0] == 'start':
+                        move = True
+                    else:
+                        check_start == 0
+                else:
+                    check_start == 0
+        finally:
+            pass
         if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True:
             t_f = open("input.txt", "w")
             t_f.write("")
