@@ -71,12 +71,13 @@ def Start_stage(num_stage):
     bigfont = pygame.font.Font('freesansbold.ttf', 35)
     # This sets the margin between each cell
     MARGIN = 1
-
+    add_space = 50
     if screen_width <= 1900:
         WIDTH = round(WIDTH * 0.711)
         HEIGHT = round(HEIGHT *0.711)
         char_scale = round(char_scale *0.711)
         move_space = round(move_space*0.711)
+        add_space = round(add_space * 0.711)
         bigfont = pygame.font.Font('freesansbold.ttf', round(35*0.711))
     # elif screen_width >= 2000:
     #     WIDTH = round(WIDTH * 3840/1920)
@@ -84,6 +85,8 @@ def Start_stage(num_stage):
     #     char_scale = round(char_scale *3840/1920)
     #     move_space = round(move_space*3840/1920)
     #     bigfont = pygame.font.Font('freesansbold.ttf', round(35*3840/1920))
+
+    #ขอบสุดของด่านนั้นๆ 
     lenght = (WIDTH*num_col) + num_col + (WIDTH*3)
     hight = (HEIGHT*num_row) + num_row + (HEIGHT*2)
     
@@ -91,13 +94,13 @@ def Start_stage(num_stage):
     pygame.display.set_caption("Robot Simulation")
     ### สร้างตำแหน่งที่ตั้งของตัว จะprint error ถ้าต่ำแหน่งเกินจำนวนของ col และ row Create_def
     def create_grid(x,y):
-        if (x*move_space)+x+50 >= (lenght) or (y*move_space)+y+50 >= (hight) :
+        if (x*move_space)+x+add_space >= (lenght) or (y*move_space)+y+add_space >= (hight) :
             return print('Error pos ')
         else:
-            return (x*move_space)+x+50,(y*move_space)+y+50
+            return (x*move_space)+x+add_space,(y*move_space)+y+add_space
      ################ สร้างตัวบล็อคไม่ให้เดิน จะปลดล็อกตามด่านที่ config
     def create_block(x,y):
-            return (x*move_space)+x+50,(y*move_space)+y+50
+            return (x*move_space)+x+add_space,(y*move_space)+y+add_space
 
     def lock_space():       
         for k in range(13):
@@ -299,8 +302,8 @@ def Start_stage(num_stage):
                 color = WHITE
                 pygame.draw.rect(screen,
                                 color,
-                                [(MARGIN + WIDTH) * column + MARGIN+50,
-                                (MARGIN + HEIGHT) * row + MARGIN+50,
+                                [(MARGIN + WIDTH) * column + MARGIN+add_space,
+                                (MARGIN + HEIGHT) * row + MARGIN+add_space,
                                 WIDTH,
                                 HEIGHT])
 
@@ -432,11 +435,11 @@ def Start_stage(num_stage):
             showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE)  
 
         #### Stage ####
-        if botton("STAGE 1",window_width+50 -window_width, window_height -200,WHITE,RED) == True:
+        if botton("STAGE 1",window_width+(add_space) -window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage1.json")
-        elif botton("STAGE 2",window_width+250 - window_width, window_height -200,WHITE,RED) == True:
+        elif botton("STAGE 2",window_width+(add_space*5) - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage2.json")
-        elif botton("STAGE 3 ",window_width+450 - window_width, window_height -200,WHITE,RED) == True:
+        elif botton("STAGE 3 ",window_width+(add_space*9) - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage3.json")
 
         pygame.display.flip()
