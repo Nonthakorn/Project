@@ -39,8 +39,7 @@ def Start_stage(num_stage):
             box = i['box']
             box_x = i['box_x']
             box_y = i['box_y']
-    box_x = [2,2]
-    box_y = [0,2]
+            
     ###input from text file ###  read_input
     def read_input():
         f = open("input.txt", "r") # ใช้อ่านไฟล์
@@ -72,12 +71,13 @@ def Start_stage(num_stage):
     bigfont = pygame.font.Font('freesansbold.ttf', 35)
     # This sets the margin between each cell
     MARGIN = 1
-
+    add_space = 50
     if screen_width <= 1900:
         WIDTH = round(WIDTH * 0.711)
         HEIGHT = round(HEIGHT *0.711)
         char_scale = round(char_scale *0.711)
         move_space = round(move_space*0.711)
+        add_space = round(add_space * 0.711)
         bigfont = pygame.font.Font('freesansbold.ttf', round(35*0.711))
     # elif screen_width >= 2000:
     #     WIDTH = round(WIDTH * 3840/1920)
@@ -85,6 +85,7 @@ def Start_stage(num_stage):
     #     char_scale = round(char_scale *3840/1920)
     #     move_space = round(move_space*3840/1920)
     #     bigfont = pygame.font.Font('freesansbold.ttf', round(35*3840/1920))
+    #ขอบสุดของด่านนั้นๆ 
     lenght = (WIDTH*num_col) + num_col + (WIDTH*3)
     hight = (HEIGHT*num_row) + num_row + (HEIGHT*2)
     
@@ -92,24 +93,13 @@ def Start_stage(num_stage):
     pygame.display.set_caption("Robot Simulation")
     ### สร้างตำแหน่งที่ตั้งของตัว จะprint error ถ้าต่ำแหน่งเกินจำนวนของ col และ row Create_def
     def create_grid(x,y):
-        if (x*move_space)+x+50 >= (lenght) or (y*move_space)+y+50 >= (hight) :
+        if (x*move_space)+x+add_space >= (lenght) or (y*move_space)+y+add_space >= (hight) :
             return print('Error pos ')
         else:
-            return (x*move_space)+x+50,(y*move_space)+y+50
-
-    def create_box_grid(x,y):
-        box_x = []
-        box_y = []
-        for i,j in zip(x,y):
-            if (i*move_space)+i+50 >= (lenght) or (j*move_space)+j+50 >= (hight) :
-                return print('Error pos ')
-            else:
-                box_x.append((i*move_space)+i+50)
-                box_y.append((j*move_space)+j+50)
-        return box_x,box_y
+            return (x*move_space)+x+add_space,(y*move_space)+y+add_space
      ################ สร้างตัวบล็อคไม่ให้เดิน จะปลดล็อกตามด่านที่ config
     def create_block(x,y):
-            return (x*move_space)+x+50,(y*move_space)+y+50
+            return (x*move_space)+x+add_space,(y*move_space)+y+add_space
 
     def lock_space():       
         for k in range(13):
@@ -125,29 +115,40 @@ def Start_stage(num_stage):
             x = 0
             y = 2
             # print("win")
+    colline_lst= []
+    def find_colli(x,y,box_x,box_y):
+        colline_json = {'F_col':[0,(add_space+1)],'B_col':[0,-(add_space+1)],'L_col':[-(add_space+1),0],'R_col':[(add_space+1),0]}
+        kst = []
+        colline_lst= []
+        for i in range(len(box_x)):
+            kst.append([box_x[i]-x,box_y[i]-y])
+        for h in kst:
+            for j,k in colline_json.items():
+                if h == k:
+                    colline_lst.append(j)
+                else:
+                    pass
+                    
+        return colline_lst
+
+
     def collide(x,y):
         x_collinde = True
         y_collinde = True
-        building_x_pos,building_y_pos = create_box_grid(box_x,box_y)
-        k = 0
-        for i,j in zip(building_x_pos,building_y_pos):
-            if x < abs(i - move_space) and y < abs(j-move_space):
-                x_collinde = False
-                y_collinde = False
-            elif x < abs(i - move_space-box_x[k]):
-                x_collinde = True
-                y_collinde = False
-            elif y < abs(j - move_space-box_y[k]):
-                x_collinde = False
-                y_collinde = True
-            else:
-                x_collinde = True
-                y_collinde = True
-            print('i',i,j)
-            print(x,abs(i - move_space-box_x[k]))
-            k +=1
-        print('building_x_pos,building_y_pos', building_x_pos,building_y_pos)
-        return x_collinde,y_collinde,i,j
+        building_x_pos,building_y_pos = create_grid(box_x,box_y)
+        if x < abs(building_x_pos - move_space) and y < abs(building_y_pos-move_space):
+            x_collinde = False
+            y_collinde = False
+        elif x < abs(building_x_pos - move_space):
+            x_collinde = True
+            y_collinde = False
+        elif y < abs(building_y_pos - move_space):
+            x_collinde = False
+            y_collinde = True
+        else:
+            x_collinde = True
+            y_collinde = True
+        return x_collinde,y_collinde,building_x_pos,building_y_pos
     x,y = create_grid(x,y)  #config
     ############# set_object_char
     char_front = pygame.transform.scale(pygame.image.load('char/front.png'),(char_scale,char_scale))
@@ -181,10 +182,16 @@ def Start_stage(num_stage):
         # print('x,y = ', create_grid(brainX,brainY))
 
     def box_block(building_X,building_Y):
-        for i,j in zip(building_X,building_Y):
+        box_x_lst = []
+        box_y_lst = []
+        for i in range(len(building_X)):
             building = pygame.image.load('char/building.png')
             building = pygame.transform.scale(building,(char_scale,char_scale))
-            screen.blit(building, (create_grid(i,j)))
+            box_x,box_y = create_grid(building_X[i],building_Y[i])
+            screen.blit(building, (create_grid(building_X[i],building_Y[i])))
+            box_x_lst.append(box_x)
+            box_y_lst.append(box_y)
+        return box_x_lst,box_y_lst
     ### text_and_botton
     def botton(text,textx,texty,color,hover_col): # str input
         
@@ -257,12 +264,11 @@ def Start_stage(num_stage):
     blank_text = [""]
     for j in range(num_of_order): 
         lst_command.append(35*j)
-    lst = [1,3,4]
     # -------- Main_Program_Loop -----------
     pygame.display.update()
     while not done:
         mouse = pygame.mouse.get_pos()
-        
+        # x_collinde, y_collinde,building_x_pos,building_y_pos = collide(x, y)
         
         for event in pygame.event.get():  # User did something
             if event.type == pygame.QUIT:  # If user clicked close
@@ -319,12 +325,13 @@ def Start_stage(num_stage):
                 color = WHITE
                 pygame.draw.rect(screen,
                                 color,
-                                [(MARGIN + WIDTH) * column + MARGIN+50,
-                                (MARGIN + HEIGHT) * row + MARGIN+50,
+                                [(MARGIN + WIDTH) * column + MARGIN+add_space,
+                                (MARGIN + HEIGHT) * row + MARGIN+add_space,
                                 WIDTH,
                                 HEIGHT])
 
-
+        if box == True:
+            box_x_lst,box_y_lst = box_block(box_x,box_y)
         ### move_logic
         if move == True:
 
@@ -363,26 +370,48 @@ def Start_stage(num_stage):
                 if text_file[num_text] == 'move':
                     # print('m')
                     if box == True:
-                        x_collinde, y_collinde,building_x_pos,building_y_pos = collide(x, y)
-                        if x_collinde == False and y_collinde == False:
-                            if right == True and x >= move_space + move_space:
-                                x -= move_space + MARGIN
-                            elif left == True and x <= lenght - move_space - move_space:
-                                x += move_space + MARGIN
-                            elif back == True and y >= move_space + move_space:
-                                y -= move_space + MARGIN
-                            elif front == True and y <= hight - move_space:
-                                y += move_space + MARGIN
-                        elif x_collinde == False and y_collinde == True:
-                            if right == True and x >= move_space +move_space:
-                                x -= move_space+MARGIN
-                            elif left == True and x <= lenght - move_space - move_space:
-                                x += move_space+MARGIN
-                        elif x_collinde == True and y_collinde == False:
-                            if back == True and y >= move_space + move_space:
-                                y -= move_space+MARGIN
-                            elif front == True and y <=hight - move_space:
-                                y += move_space+MARGIN
+                        colline_lst = find_colli(x,y,box_x_lst,box_y_lst)  
+                        print(colline_lst)                    
+                        if len(colline_lst) == 2:
+                            if colline_lst[0] == "F_col" and colline_lst[1] == "B_col":
+                                if right == True and x >= move_space +move_space:
+                                    x -= move_space+MARGIN
+                                elif left == True and x <= lenght - move_space - move_space:
+                                    x += move_space+MARGIN
+                            elif colline_lst[0] == "L_col" and colline_lst[1] == "R_col":
+                                if back == True and y >= move_space + move_space:
+                                    y -= move_space+MARGIN
+                                elif front == True and y <=hight - move_space:
+                                    y += move_space+MARGIN
+                        elif len(colline_lst) == 1:
+                            if colline_lst[0] == "F_col":
+                                if right == True and x >= move_space +move_space:
+                                    x -= move_space+MARGIN
+                                elif left == True and x <= lenght - move_space - move_space:
+                                    x += move_space+MARGIN
+                                elif back == True and y >= move_space + move_space:
+                                    y -= move_space+MARGIN
+                            elif colline_lst[0] == "B_col":
+                                if right == True and x >= move_space +move_space:
+                                    x -= move_space+MARGIN
+                                elif left == True and x <= lenght - move_space - move_space:
+                                    x += move_space+MARGIN
+                                elif front == True and y <=hight - move_space:
+                                    y += move_space+MARGIN
+                            elif colline_lst[0] == "L_col":
+                                if left == True and x <= lenght - move_space - move_space:
+                                    x += move_space+MARGIN
+                                elif back == True and y >= move_space + move_space:
+                                    y -= move_space+MARGIN
+                                elif front == True and y <=hight - move_space:
+                                    y += move_space+MARGIN
+                            elif colline_lst[0] == "R_col":
+                                if right == True and x >= move_space +move_space:
+                                    x -= move_space+MARGIN
+                                elif back == True and y >= move_space + move_space:
+                                    y -= move_space+MARGIN
+                                elif front == True and y <=hight - move_space:
+                                    y += move_space+MARGIN
                         else:
                             if right == True and x >= move_space + move_space:
                                 x -= move_space + MARGIN
@@ -392,7 +421,6 @@ def Start_stage(num_stage):
                                 y -= move_space + MARGIN
                             elif front == True and y <= hight - move_space:
                                 y += move_space + MARGIN
-                        print(x_collinde,y_collinde)
                     else:
                         if right == True and x >= move_space + move_space:
                             x -= move_space + MARGIN
@@ -408,6 +436,7 @@ def Start_stage(num_stage):
                     win = 1
                 showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
                 pygame.time.wait(700)
+
                 num_text +=1
         if num_of_order == 0:
             showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
@@ -422,19 +451,23 @@ def Start_stage(num_stage):
         # clock.tick(60)
         redrawGameWindow()
         random_brain(brainX,brainY) # config
-        if box == True:
-            box_block(box_x,box_y)
+        
         showtext("Command",((MARGIN + WIDTH) * 14)+50,50,WHITE)
         showtext("STAGE",(window_width-200),(window_height- 150),WHITE)
         showtext(str(stage),(window_width-75),(window_height- 150),WHITE)
 
 
-
-        if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
-            if text_file[0] == 'start':
-                move = True
-            else:
-                 check_start == 0
+        try:
+            if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
+                if len(text_file) >=1 :
+                    if text_file[0] == 'start':
+                        move = True
+                    else:
+                        check_start == 0
+                else:
+                    check_start == 0
+        finally:
+            pass
         if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True:
             t_f = open("input.txt", "w")
             t_f.write("")
@@ -447,11 +480,11 @@ def Start_stage(num_stage):
             showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE)  
 
         #### Stage ####
-        if botton("STAGE 1",window_width+50 -window_width, window_height -200,WHITE,RED) == True:
+        if botton("STAGE 1",window_width+(add_space) -window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage1.json")
-        elif botton("STAGE 2",window_width+250 - window_width, window_height -200,WHITE,RED) == True:
+        elif botton("STAGE 2",window_width+(add_space*5) - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage2.json")
-        elif botton("STAGE 3 ",window_width+450 - window_width, window_height -200,WHITE,RED) == True:
+        elif botton("STAGE 3 ",window_width+(add_space*9) - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage3.json")
 
         pygame.display.flip()
