@@ -27,7 +27,6 @@ _MODEL_SIZE = (416, 416)
 _CLASS_NAMES_FILE = './data/labels/obj.names'
 _MAX_OUTPUT_SIZE = 20
 pygame.init()
-screen = pygame.display.set_mode((800,800))
 
 def main(type, iou_threshold, confidence_threshold, input_names):
     class_names = load_class_names(_CLASS_NAMES_FILE)
@@ -60,33 +59,37 @@ def main(type, iou_threshold, confidence_threshold, input_names):
                                   (int(frame_size[0]), int(frame_size[1])))
             
             screen = pygame.display.set_mode((1300,800))
+            done =True
             try:
-                while True:
+                while done:
                     screen.fill((255,55,210))
                     for event in pygame.event.get():  # User did something
+                        print('event')
                         if event.type == pygame.QUIT:  # If user clicked close
                             break  # Flag that we are done so we exit this loop
                         if event.type == pygame.KEYDOWN:  # If user clicked close
                             if event.key == pygame.K_q:
-                                break
+                                print('kill')
+                                done = False
                     ret, frame = cap.read()
                     if not ret:
                         break
                     
-                    frame = frame.swapaxes(0, 1)
+                    frame = frame.swapaxes(0, 0)
+                    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                     resized_frame = cv2.resize(frame, dsize=_MODEL_SIZE[::-1],
                                                interpolation=cv2.INTER_NEAREST)
                     detection_result = sess.run(detections,
                                                 feed_dict={inputs: [resized_frame]})
-                    framenew=numpy.rot90(frame)
-                    framenew=pygame.surfarray.make_surface(frame)
-                    draw_frame(frame, frame_size, detection_result,
-                               class_names, _MODEL_SIZE)
+                    draw_frame(frame, frame_size, detection_result, class_names, _MODEL_SIZE)
+                    frame=numpy.rot90(frame)
+                    frame=pygame.surfarray.make_surface(frame)
 
-                    screen.blit(framenew,(0,0))
+                    screen.blit(frame,(0,0))
                     key = cv2.waitKey(1) & 0xFF
 
                     if key == ord('q'):
+                        print('qqqq')
                         break
                     pygame.display.flip()
                     # out.write(frame)

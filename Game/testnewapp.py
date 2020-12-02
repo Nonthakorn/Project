@@ -16,6 +16,20 @@ import py_compile
 import ctypes
 import runyolo
 ctypes.windll.user32.SetProcessDPIAware()
+import pygame
+import tensorflow as tf
+import sys
+import cv2
+import numpy
+
+from yolo_v3 import Yolo_v3
+from utils import load_images, load_class_names, draw_boxes, draw_frame
+
+tf.compat.v1.disable_eager_execution()
+
+_MODEL_SIZE = (416, 416)
+_CLASS_NAMES_FILE = './data/labels/obj.names'
+_MAX_OUTPUT_SIZE = 20
 
 def Start_stage(num_stage):
         
@@ -53,11 +67,6 @@ def Start_stage(num_stage):
     num_text = 0
     move = False
 
-    def show_command():
-        text_file,num_of_order = read_input()
-        if num_text == 0:
-            print('sth')
-    # Define some colors  Define_color
     BLACK = (0, 0, 0)
     WHITE = (255, 255, 255)
     GREEN = (0, 255, 0)
@@ -217,7 +226,7 @@ def Start_stage(num_stage):
     # text_stageClear = bigfont.render('CLEAR', True, BLACK)  #render text  
     # text_stageClearRect = text_stageClear.get_rect().center = (((lenght-50)/2.5), hight/2.3)
     # Loop until the user clicks the close button.
-    done = False
+
     scence = False
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
@@ -255,6 +264,8 @@ def Start_stage(num_stage):
     def blitCamFrame(frame,screen):
         screen.blit(frame,(round(window_width*0.6),30))
         return screen
+
+    
     check = 0
     facedirection = 0
     lst_command = []
@@ -266,6 +277,7 @@ def Start_stage(num_stage):
         lst_command.append(35*j)
     # -------- Main_Program_Loop -----------
     pygame.display.update()
+    done = False
     while not done:
         mouse = pygame.mouse.get_pos()
         # x_collinde, y_collinde,building_x_pos,building_y_pos = collide(x, y)
@@ -281,7 +293,7 @@ def Start_stage(num_stage):
         # Set the screen background
         screen.fill(BLACK)
 
-
+        ############# แสดงภาพบนจอ
         frame,realframe = getCamFrame(camera)
         screen = blitCamFrame(frame, screen)
         if check == 1:
