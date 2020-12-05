@@ -15,22 +15,23 @@ import os
 import py_compile
 import ctypes
 import runyolo
-ctypes.windll.user32.SetProcessDPIAware()
-import pygame
-import tensorflow as tf
-import sys
-import cv2
-import numpy
+# ctypes.windll.user32.SetProcessDPIAware()
+# import pygame
+# import tensorflow as tf
+# import sys
+# import cv2
+# import numpy
 
-from yolo_v3 import Yolo_v3
-from utils import load_images, load_class_names, draw_boxes, draw_frame
+# from yolo_v3 import Yolo_v3
+# from utils import load_images, load_class_names, draw_boxes, draw_frame
 
-tf.compat.v1.disable_eager_execution()
+# tf.compat.v1.disable_eager_execution()
 
-_MODEL_SIZE = (416, 416)
-_CLASS_NAMES_FILE = './data/labels/obj.names'
-_MAX_OUTPUT_SIZE = 20
+# _MODEL_SIZE = (416, 416)
+# _CLASS_NAMES_FILE = './data/labels/obj.names'
+# _MAX_OUTPUT_SIZE = 20
 
+show_comm = False
 def Start_stage(num_stage):
         
     # Initialize pygame ##setscreen
@@ -166,6 +167,11 @@ def Start_stage(num_stage):
     char_turnback = pygame.transform.scale(pygame.image.load('char/back.png'),(char_scale,char_scale))
     char_lock = pygame.transform.scale(pygame.image.load('char/lock.png'),(char_scale-5,char_scale-5))
 
+    image_file = "char/command.jpg"
+    image = pygame.image.load(image_file).convert()
+    image = pygame.transform.scale(image,(round(window_width*0.5),round(window_height*0.9)))
+    start_rect = image.get_rect()
+    image_rect = start_rect
 
     left = False
     right = False
@@ -214,7 +220,19 @@ def Start_stage(num_stage):
             screen.blit(my_text_hover,(textx,texty))
             if pygame.mouse.get_pressed() == (1, 0, 0): 
                 return True
-
+    def show_command(text,textx,texty,color,hover_col): # str input
+        bigfont = pygame.font.Font('freesansbold.ttf', 35)
+        click = pygame.mouse.get_pressed()
+        my_text = bigfont.render(text, True, color)
+        my_text_hover = bigfont.render(text, True, hover_col)
+        text_width = my_text.get_width()
+        text_height = my_text.get_height()
+        screen.blit(my_text,(round(textx),round(texty)))
+        if textx +text_width > mouse[0] > textx and texty +text_height > mouse[1] > texty:
+            screen.blit(my_text_hover,(textx,texty))
+            if pygame.mouse.get_pressed() == (1, 0, 0):
+                get_click = True
+                return get_click
     def showtext(text,textx,texty,color):
         my_text = bigfont.render(text, True, color)
         text_width = my_text.get_width()
@@ -273,6 +291,8 @@ def Start_stage(num_stage):
     check_start = 0
     text_file,num_of_order = read_input()
     blank_text = [""]
+    command_show = 0
+    processing_time = 0
     for j in range(num_of_order): 
         lst_command.append(35*j)
     # -------- Main_Program_Loop -----------
@@ -290,37 +310,14 @@ def Start_stage(num_stage):
                 if event.key == pygame.K_q:
                     done = True  # Flag that we are done so we exit this loop
                     exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                command_show = 3
         # Set the screen background
         screen.fill(BLACK)
 
         ############# แสดงภาพบนจอ
         frame,realframe = getCamFrame(camera)
         screen = blitCamFrame(frame, screen)
-        if check == 1:
-            cv2.imwrite("test_image/image50.JPG", realframe)
-            if num_of_order != 0:
-                num_img =  open ("num_img.txt", "r").read()
-                tmp_num_img = int(num_img) 
-                cv2.imwrite("train_image/image%s.JPG" %str(tmp_num_img), realframe)
-                print("cap_train_success")
-                tmp_num_img = int(num_img) + 1
-                num_img =  open ("num_img.txt", "w")
-                num_img.write(str(tmp_num_img))
-                num_img.close()
-            check = 2
-        try:
-            if check == 2 :
-                runyolo.yolo()
-                Start_stage(num_stage)
-                check = 3
-            yolo_check = botton("RUNYOLO",((MARGIN + WIDTH) * 14)+50, window_height -150,WHITE,RED)
-            if yolo_check:
-                check = 1
-            if check == 3:
-                showtext("YOLO SUCCESS!!",((MARGIN + WIDTH) * 14)+50,window_height -100,WHITE)
-                yolo_check = None
-        finally:
-            pass
         ## OPENCV2
         
         #set_border
@@ -341,7 +338,43 @@ def Start_stage(num_stage):
                                 (MARGIN + HEIGHT) * row + MARGIN+add_space,
                                 WIDTH,
                                 HEIGHT])
+        if check == 0:
+            showtext("PLEASED PRESS START",((MARGIN + WIDTH) * 14)+40,window_height -200,WHITE)
+        try:
+            if botton("START",window_width-200, window_height -150,WHITE,RED) == True:
+                check = 1     
 
+            if check == 1:
+                cv2.imwrite("test_image/image50.JPG", realframe)
+                if num_of_order != 0:
+                    num_img =  open ("num_img.txt", "r").read()
+                    tmp_num_img = int(num_img) 
+                    cv2.imwrite("train_image/image%s.JPG" %str(tmp_num_img), realframe)
+                    tmp_num_img = int(num_img) + 1
+                    num_img =  open ("num_img.txt", "w")
+                    num_img.write(str(tmp_num_img))
+                    num_img.close()
+                    for i in range(len(lst_command)):
+                         showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
+                    show_comm = True
+                
+                    
+                else:
+                     check_start = 1
+                check = 2
+
+            if check == 2 :
+                # showtext("Processing",((MARGIN + WIDTH) * 14)+50,900,WHITE)
+                runyolo.yolo()
+                pygame.display.flip()
+                check = 3 
+                processing_time = 2
+            if check == 3:
+                if len(text_file) >=1 :
+                    if text_file[0] == 'start':
+                        move = True
+        finally:
+            pass
         if box == True:
             box_x_lst,box_y_lst = box_block(box_x,box_y)
         ### move_logic
@@ -382,8 +415,7 @@ def Start_stage(num_stage):
                 if text_file[num_text] == 'move':
                     # print('m')
                     if box == True:
-                        colline_lst = find_colli(x,y,box_x_lst,box_y_lst)  
-                        print(colline_lst)                    
+                        colline_lst = find_colli(x,y,box_x_lst,box_y_lst)                     
                         if len(colline_lst) == 2:
                             if colline_lst[0] == "F_col" and colline_lst[1] == "B_col":
                                 if right == True and x >= move_space +move_space:
@@ -447,14 +479,11 @@ def Start_stage(num_stage):
                 if text_file[num_text] == 'end':
                     win = 1
                 showtext("-",((MARGIN + WIDTH) * 14)+40,100+lst_command[num_text],WHITE)
+                for i in range(len(lst_command)):
+                    showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
                 pygame.time.wait(700)
 
                 num_text +=1
-        if num_of_order == 0:
-            showtext("PLEASED RUNYOLO",((MARGIN + WIDTH) * 14)+40,100+75,WHITE)
-        else:
-            for i in range(len(lst_command)):
-                showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
     
 
 
@@ -465,31 +494,30 @@ def Start_stage(num_stage):
         random_brain(brainX,brainY) # config
         
         showtext("Command",((MARGIN + WIDTH) * 14)+50,50,WHITE)
-        showtext("STAGE",(window_width-200),(window_height- 150),WHITE)
-        showtext(str(stage),(window_width-75),(window_height- 150),WHITE)
+        showtext("STAGE",(window_width-200),(window_height- 200),WHITE)
+        showtext(str(stage),(window_width-75),(window_height- 200),WHITE)
+    
+        get_click =  botton("SHOW COMMAND",window_width-500, window_height -150,WHITE,RED)
+        if get_click:
+            command_show = 1
+            get_click = False
 
 
-        try:
-            if botton("START",window_width-200, window_height -100,WHITE,RED) == True:
-                if len(text_file) >=1 :
-                    if text_file[0] == 'start':
-                        move = True
-                    else:
-                        check_start == 0
-                else:
-                    check_start == 0
-        finally:
-            pass
-        if botton("RESTART",window_width-200, window_height -50,WHITE,RED) == True:
-            t_f = open("input.txt", "w")
-            t_f.write("")
-            t_f.close()
+        
+        if botton("RESTART",window_width-200, window_height -100,WHITE,RED) == True:
+            # t_f = open("input.txt", "w")
+            # t_f.write("")
+            # t_f.close()
             Start_stage(num_stage)      
         lock_space()
         if win == 1:
             win_stage(x,y)
+            for i in range(len(lst_command)):
+                    showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
+
         if check_start == 1:
-            showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE)  
+            showtext("TRY AGAIN",((MARGIN + WIDTH) * 14)+50,100,WHITE) 
+        
 
         #### Stage ####
         if botton("STAGE 1",window_width+(add_space) -window_width, window_height -200,WHITE,RED) == True:
@@ -498,7 +526,11 @@ def Start_stage(num_stage):
             Start_stage("map/stage2.json")
         elif botton("STAGE 3 ",window_width+(add_space*9) - window_width, window_height -200,WHITE,RED) == True:
             Start_stage("map/stage3.json")
+        
 
+        if command_show ==1:
+            image_rect = start_rect.move(150,70)
+            screen.blit(image, image_rect)
         pygame.display.flip()
         pygame.display.update()
     
