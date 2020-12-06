@@ -121,10 +121,9 @@ def Start_stage(num_stage):
         brain_x_pos,brain_y_pos = create_grid(brainX,brainY)
         if x == brain_x_pos and y == brain_y_pos:
             showtext('CLEAR',lenght/3,hight/2,BLACK)
-            pygame.time.delay(0)
-            x = 0
-            y = 2
-            # print("win")
+        else:
+            showtext('Not CLEAR',lenght/3,hight/2,BLACK)
+
     colline_lst= []
     def find_colli(x,y,box_x,box_y):
         colline_json = {'F_col':[0,(add_space+1)],'B_col':[0,-(add_space+1)],'L_col':[-(add_space+1),0],'R_col':[(add_space+1),0]}
@@ -286,15 +285,16 @@ def Start_stage(num_stage):
     
     check = 0
     facedirection = 0
-    lst_command = []
+
     win = 0
     check_start = 0
     text_file,num_of_order = read_input()
     blank_text = [""]
     command_show = 0
     processing_time = 0
-    for j in range(num_of_order): 
-        lst_command.append(35*j)
+    # lst_command = []
+    # for j in range(num_of_order): 
+    #     lst_command.append(35*j)
     # -------- Main_Program_Loop -----------
     pygame.display.update()
     done = False
@@ -346,6 +346,8 @@ def Start_stage(num_stage):
 
             if check == 1:
                 cv2.imwrite("test_image/image50.JPG", realframe)
+                runyolo.yolo()
+                text_file,num_of_order = read_input()
                 if num_of_order != 0:
                     num_img =  open ("num_img.txt", "r").read()
                     tmp_num_img = int(num_img) 
@@ -354,10 +356,13 @@ def Start_stage(num_stage):
                     num_img =  open ("num_img.txt", "w")
                     num_img.write(str(tmp_num_img))
                     num_img.close()
+                    lst_command = []
+                    for j in range(num_of_order): 
+                        lst_command.append(35*j)
                     for i in range(len(lst_command)):
                          showtext(text_file[i],((MARGIN + WIDTH) * 14)+50,100+lst_command[i],WHITE)
                     show_comm = True
-                
+                    
                     
                 else:
                      check_start = 1
@@ -365,7 +370,6 @@ def Start_stage(num_stage):
 
             if check == 2 :
                 # showtext("Processing",((MARGIN + WIDTH) * 14)+50,900,WHITE)
-                runyolo.yolo()
                 pygame.display.flip()
                 check = 3 
                 processing_time = 2
@@ -379,7 +383,6 @@ def Start_stage(num_stage):
             box_x_lst,box_y_lst = box_block(box_x,box_y)
         ### move_logic
         if move == True:
-
             key = pygame.key.get_pressed()
             # if move == True:
             if num_text < num_of_order:
