@@ -1,0 +1,19 @@
+{
+    "grid":[
+       {
+          "stage":2,
+          "column":5,
+          "row":5,
+          "char_x":0,
+          "char_y":0,
+          "brain_x":1,
+          "brain_y":2,
+          "box" : true,
+          "box_x": [1],
+          "box_y": [1],
+          "item" : true,
+          "item_x" : 0,
+          "item_y" : 1
+          }
+    ]
+ }

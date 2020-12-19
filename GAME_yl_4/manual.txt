@@ -1,0 +1,17 @@
+pip freeze > requirement.txt
+virtualenv -p C:\Users\Python\Python38\Scripts\ Project_env
+
+setscreen : 
+read_json :
+read_input :
+Define_color:
+set_W_H :
+Create_def :
+set_object_char :
+text_and_botton :
+OPENCV :
+Main_Program_Loop :
+set_border:
+Draw_the_grid :
+move_logic:
+call_funtion:
